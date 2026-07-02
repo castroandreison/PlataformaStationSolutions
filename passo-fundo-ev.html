@@ -1,0 +1,1504 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Condomínio StationLodge — Energia Solar + Mobilidade</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #060b17;
+  --surface: rgba(255,255,255,0.04);
+  --surface-hover: rgba(255,255,255,0.07);
+  --border: rgba(255,255,255,0.08);
+  --text: #e8edf5;
+  --text-dim: rgba(255,255,255,0.45);
+  --accent: #0affb7;
+  --accent-dim: rgba(10,255,183,0.15);
+  --blue: #4b7bff;
+  --blue-dim: rgba(75,123,255,0.12);
+  --purple: #a855f7;
+  --orange: #f97316;
+  --red: #ef4444;
+  --yellow: #facc15;
+  --radius: 14px;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+
+.wrapper {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+}
+
+/* ---- tabs ---- */
+.tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 48px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 6px;
+  overflow-x: auto;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 16px 24px;
+  border: none;
+  background: transparent;
+  color: var(--text-dim);
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  text-align: center;
+  position: relative;
+  letter-spacing: 0.3px;
+}
+
+.tab-btn:hover {
+  color: var(--text);
+  background: rgba(255,255,255,0.05);
+}
+
+.tab-btn.active {
+  color: #fff;
+  background: linear-gradient(135deg, rgba(10,255,183,0.15), rgba(75,123,255,0.1));
+  border: 1px solid rgba(10,255,183,0.2);
+  box-shadow: 0 0 20px rgba(10,255,183,0.08);
+}
+
+.tab-btn .tab-icon {
+  display: block;
+  font-size: 22px;
+  margin-bottom: 4px;
+}
+
+.tab-btn .tab-label { display: block; }
+.tab-btn .tab-sub {
+  display: block;
+  font-size: 11px;
+  font-weight: 400;
+  opacity: 0.5;
+  margin-top: 2px;
+}
+
+.tab-content { display: none; animation: fadeIn 0.4s ease; width: 100%; max-width: 100%; }
+.tab-content.active { display: block; overflow-x: hidden; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- header ---- */
+header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+header .badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 100px;
+  border: 1px solid var(--accent-dim);
+  background: rgba(10,255,183,0.06);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+header .badge span { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+header h1 {
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -1.5px;
+  background: linear-gradient(135deg, #fff 0%, #94a3b8 50%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 12px;
+}
+
+header p { font-size: 17px; color: var(--text-dim); font-weight: 300; }
+
+/* ---- metrics grid ---- */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 36px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  backdrop-filter: blur(8px);
+  transition: all 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+
+.card:hover {
+  background: var(--surface-hover);
+  border-color: rgba(255,255,255,0.12);
+  transform: translateY(-2px);
+}
+
+.card .label {
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+
+.card .value {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  line-height: 1.1;
+}
+
+.card .value.green { color: var(--accent); }
+.card .value.blue { color: var(--blue); }
+.card .value.purple { color: var(--purple); }
+.card .value.orange { color: var(--orange); }
+.card .value.yellow { color: var(--yellow); }
+
+.card .sub { font-size: 13px; color: var(--text-dim); margin-top: 6px; }
+.card .trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 6px;
+  margin-top: 8px;
+}
+.trend.up { color: var(--accent); background: var(--accent-dim); }
+.trend.neutral { color: var(--text-dim); background: rgba(255,255,255,0.06); }
+
+/* ---- sections ---- */
+section { margin-bottom: 40px; }
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  letter-spacing: -0.3px;
+}
+
+.section-title .icon {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+/* ---- tables ---- */
+.table-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+thead th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-dim);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+tbody td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+tbody td.num { white-space: nowrap; }
+
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: rgba(255,255,255,0.03); }
+
+td:first-child { font-weight: 500; }
+td.num { font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.tag {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.tag.ac { background: var(--blue-dim); color: var(--blue); }
+.tag.dc { background: var(--accent-dim); color: var(--accent); }
+.tag.model { background: rgba(168,85,247,0.12); color: var(--purple); }
+.tag.adm1 { background: rgba(75,123,255,0.15); color: var(--blue); }
+.tag.adm2 { background: rgba(249,115,22,0.12); color: var(--orange); }
+
+/* ---- bar ---- */
+.bar-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.bar {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.06);
+  flex: 1;
+  min-width: 50px;
+  overflow: hidden;
+}
+.bar .fill {
+  height: 100%;
+  border-radius: 3px;
+}
+
+/* ---- comparison boxes ---- */
+.compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 740px) {
+  .compare { grid-template-columns: 1fr; }
+}
+
+.compare-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  transition: all 0.2s;
+}
+.compare-card:hover { border-color: rgba(255,255,255,0.12); }
+
+.compare-card .title {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.compare-card ul {
+  list-style: none;
+  padding: 0;
+}
+
+.compare-card li {
+  padding: 8px 0;
+  font-size: 13px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.compare-card li:last-child { border-bottom: none; }
+
+.compare-card .label-item { color: var(--text-dim); }
+.compare-card .val { font-weight: 600; }
+.compare-card .highlight-val { color: var(--accent); font-weight: 700; font-size: 18px; }
+.compare-card .badge-rec {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: var(--accent-dim);
+  color: var(--accent);
+  margin-left: 6px;
+}
+a.btn-modelo {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blue);
+  background: var(--blue-dim);
+  text-decoration: none;
+  transition: 0.2s;
+}
+a.btn-modelo:hover {
+  background: rgba(75,123,255,0.25);
+  color: #8ab4ff;
+}
+
+/* ---- timeline ---- */
+.timeline {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.timeline-item {
+  min-width: 140px;
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+}
+
+.timeline-item .year {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+
+.timeline-item .count {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+.timeline-item .count.green { color: var(--accent); }
+.timeline-item .count.blue { color: var(--blue); }
+.timeline-item .count.orange { color: var(--orange); }
+.timeline-item .count.purple { color: var(--purple); }
+.timeline-item .count.yellow { color: var(--yellow); }
+
+.timeline-item .note {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 4px;
+}
+
+/* ---- charger-note ---- */
+.charger-note {
+  padding: 14px 16px;
+  font-size: 13px;
+  color: var(--text-dim);
+  border-top: 1px solid var(--border);
+  line-height: 1.6;
+}
+
+.charger-note strong { color: var(--text); font-weight: 600; }
+
+/* ---- footer ---- */
+footer {
+  text-align: center;
+  padding-top: 40px;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+/* ---- responsive ---- */
+@media (max-width: 640px) {
+  .wrapper { padding: 24px 12px 60px; }
+  .card .value { font-size: 26px; }
+  thead th, tbody td { padding: 10px 12px; font-size: 12px; }
+}
+
+/* ---- section break ---- */
+.section-break {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  margin: 40px 0;
+}
+
+/* ---- recommendation highlight ---- */
+.rec-box {
+  background: linear-gradient(135deg, var(--accent-dim), rgba(10,255,183,0.03));
+  border: 1px solid rgba(10,255,183,0.2);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-top: 16px;
+}
+
+.rec-box .rec-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+
+.rec-box p { font-size: 13px; line-height: 1.7; color: var(--text-dim); }
+.rec-box strong { color: var(--text); }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+
+  <header>
+    <div class="badge"><span></span> Análise Técnica &middot; ADM1 &middot; ADM2</div>
+    <h1>Energia Solar + Mobilidade<br><span class="highlight">Condomínio StationLodge</span></h1>
+    <p>Dimensionamento fotovoltaico &middot; Projeção de frota &middot; Viabilidade</p>
+  </header>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="tab-ev">
+      <span class="tab-icon">&#9889;</span>
+      <span class="tab-label">Mobilidade Elétrica</span>
+      <span class="tab-sub">Dados ABVE · Passo Fundo</span>
+    </button>
+    <button class="tab-btn" data-tab="tab-chargers">
+      <span class="tab-icon">&#9889;</span>
+      <span class="tab-label">Análise Carregadores</span>
+      <span class="tab-sub">Recarga · Demanda · Gestão</span>
+    </button>
+    <button class="tab-btn" data-tab="tab-solar">
+      <span class="tab-icon">&#9728;</span>
+      <span class="tab-label">Análise Solar</span>
+      <span class="tab-sub">Dimensionamento · Payback · Instalação</span>
+    </button>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- TAB 1 — MOBILIDADE ELÉTRICA (existing content reorganized) -->
+  <!-- ============================================================ -->
+  <div class="tab-content active" id="tab-ev">
+
+    <div class="metrics">
+      <div class="card">
+        <div class="label">Eletrificados acumulados</div>
+        <div class="value green">1.146</div>
+        <div class="sub">desde início do histórico ABVE</div>
+        <div class="trend up">+60% crescimento atual</div>
+      </div>
+      <div class="card">
+        <div class="label">Vendas 2025</div>
+        <div class="value blue">552</div>
+        <div class="sub">vs 2024 &middot; salto de 38%</div>
+        <div class="trend up">+38%</div>
+      </div>
+      <div class="card">
+        <div class="label">Jan–Abr 2026</div>
+        <div class="value purple">270</div>
+        <div class="sub">de 1.889 carros 0km emplacados</div>
+        <div class="trend neutral">1 em cada 7</div>
+      </div>
+      <div class="card">
+        <div class="label">Frota total circulante</div>
+        <div class="value orange">154,8k</div>
+        <div class="sub">todos os combustíveis &middot; 1º sem 2026</div>
+      </div>
+    </div>
+
+    <section>
+      <div class="section-title">
+        <div class="icon" style="background:var(--accent-dim);color:var(--accent);">&#9673;</div>
+        Volume de Emplacamentos &mdash; Passo Fundo
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Período</th>
+              <th>Total 0km</th>
+              <th>Eletrificados</th>
+              <th>Participação</th>
+              <th>Posição RS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Acumulado ABVE</td><td>&mdash;</td><td><strong>1.146</strong></td><td>&mdash;</td><td>5ª</td></tr>
+            <tr><td>2025</td><td>5.065</td><td><strong>552</strong></td><td>~10,9%</td><td>5ª (geral) &middot; 7ª (elétricos)</td></tr>
+            <tr><td>Jan–Abr 2026</td><td>1.889</td><td><strong>270</strong></td><td>14,3%</td><td>&mdash;</td></tr>
+            <tr><td>Frota total (1º sem 2026)</td><td colspan="4">154.833 veículos circulantes (todos os tipos)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title">
+        <div class="icon" style="background:var(--blue-dim);color:var(--blue);">&uarr;</div>
+        Ranking RS &middot; Modelos &middot; IPVA
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Cidade</th><th>0km (2025)</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Porto Alegre</td><td>37.629</td></tr>
+              <tr><td>2</td><td>Caxias do Sul</td><td>9.464</td></tr>
+              <tr><td>3</td><td>Canoas</td><td>6.537</td></tr>
+              <tr><td>4</td><td>Pelotas</td><td>5.771</td></tr>
+              <tr><td style="color:var(--accent);font-weight:700;">5</td><td style="color:var(--accent);font-weight:700;">Passo Fundo</td><td style="color:var(--accent);font-weight:700;">5.065</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <div class="table-wrap" style="margin-bottom:12px;">
+            <table>
+              <thead><tr><th>Modelo</th><th>Marca</th><th>Posição RS</th></tr></thead>
+              <tbody>
+                <tr><td>Dolphin Mini</td><td>BYD</td><td>3º</td></tr>
+                <tr><td>EX2</td><td>Geely</td><td>5º</td></tr>
+                <tr><td>Dolphin</td><td>BYD</td><td>9º</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Tipo</th><th>IPVA RS 2026</th></tr></thead>
+              <tbody>
+                <tr><td><span class="tag model">100% elétrico</span></td><td style="color:var(--accent);font-weight:700;">0% — Isento</td></tr>
+                <tr><td><span class="tag model">Híbrido</span></td><td style="color:var(--orange);font-weight:600;">1,5%</td></tr>
+                <tr><td><span class="tag model">Combustão</span></td><td>3,0%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title">
+        <div class="icon" style="background:var(--blue-dim);color:var(--blue);">&#9889;</div>
+        Infraestrutura de Recarga
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;">
+        <div class="card"><div class="label">Eletropostos em PF</div><div class="value blue">36</div><div class="sub">8ª posição no RS</div></div>
+        <div class="card"><div class="label">Eletropostos no RS</div><div class="value orange">1.455</div><div class="sub">3º estado do Brasil</div></div>
+        <div class="card"><div class="label">Novas marcas em PF</div><div class="value green">4+</div><div class="sub">foco em eletrificados (2025-26)</div></div>
+      </div>
+    </section>
+
+  </div>
+  <!-- /TAB 1 -->
+
+  <!-- ============================================================ -->
+  <!-- TAB 2 — ANÁLISE CARREGADORES -->
+  <!-- ============================================================ -->
+  <div class="tab-content" id="tab-chargers">
+
+    <!-- metrics -->
+    <div class="metrics">
+      <div class="card">
+        <div class="label">Carregadores Instalados</div>
+        <div class="value blue">8</div>
+        <div class="sub">4 por ADM &middot; 7,4 kW cada</div>
+      </div>
+      <div class="card">
+        <div class="label">Potência total de recarga</div>
+        <div class="value green">59,2 kW</div>
+        <div class="sub">8 &times; 7,4 kW &middot; limitados via OCPP</div>
+      </div>
+      <div class="card">
+        <div class="label">Folga disponível ADM1</div>
+        <div class="value orange">23,6 kW</div>
+        <div class="sub">para 4 carregadores limitados</div>
+      </div>
+      <div class="card">
+        <div class="label">Folga disponível ADM2</div>
+        <div class="value orange">23,5 kW</div>
+        <div class="sub">para 4 carregadores limitados</div>
+      </div>
+    </div>
+
+    <!-- EV Projection -->
+    <section>
+      <div class="section-title">
+        <div class="icon" style="background:rgba(168,85,247,0.12);color:var(--purple);">&#8599;</div>
+        Projeção de Carros Elétricos no Condomínio &mdash; 5 Anos
+      </div>
+      <p style="font-size:13px;color:var(--text-dim);margin-bottom:16px;">
+        Base: crescimento anual de 40% (abaixo da média atual de 60% em PF, projeção conservadora).
+        Estimativa de 1 vaga para cada 10 carros 0km vendidos na cidade aplicada à proporção do condom&iacute;nio.
+      </p>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="year">2026 (atual)</div>
+          <div class="count green">8</div>
+          <div class="note">4 + 4 carregadores</div>
+        </div>
+        <div class="timeline-item">
+          <div class="year">2027</div>
+          <div class="count blue">12</div>
+          <div class="note">+4 novos</div>
+        </div>
+        <div class="timeline-item">
+          <div class="year">2028</div>
+          <div class="count purple">16-18</div>
+          <div class="note">dobro do inicial</div>
+        </div>
+        <div class="timeline-item">
+          <div class="year">2029</div>
+          <div class="count orange">24-26</div>
+          <div class="note">expansão acelerada</div>
+        </div>
+        <div class="timeline-item">
+          <div class="year">2030</div>
+          <div class="count yellow">32-36</div>
+          <div class="note">4&times; a frota inicial</div>
+        </div>
+        <div class="timeline-item" style="border-color:var(--accent-dim);">
+          <div class="year">2031</div>
+          <div class="count green">45-50</div>
+          <div class="note" style="color:var(--accent);">+500% em 5 anos</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Gestão OCPP -->
+    <section>
+      <div class="section-title">
+        <div class="icon" style="background:var(--blue-dim);color:var(--blue);">&#9881;</div>
+        Análise de Gestão OCPP — Custo ao Longo de 5 Anos
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px;">
+        <div class="card" style="border-color:var(--accent-dim);">
+          <div class="label" style="color:var(--accent);">&#9312; Manual (síndico)</div>
+          <div style="font-size:13px;line-height:1.6;margin-top:6px;">
+            <strong>Custo:</strong> R$ 0<br>
+            Síndico faz rateio manual das leituras.<br>
+            <span style="color:var(--text-dim);font-size:12px;">Zero investimento, trabalho operacional mensal.</span>
+          </div>
+        </div>
+        <div class="card" style="border-color:var(--blue-dim);">
+          <div class="label" style="color:var(--blue);">&#9313; StationLodgeMobi</div>
+          <div style="font-size:13px;line-height:1.6;margin-top:6px;">
+            <strong>Custo:</strong> ~R$ 1.640/ano (ano 1)<br>
+            <strong>Reajuste:</strong> +20% ao ano<br>
+            <strong>Contrato mínimo:</strong> 5 anos<br>
+            Plataforma própria do edifício Station Lodge para gestão e rateio automático dos carregadores.
+            <span style="color:var(--text-dim);font-size:12px;">Sem investimento inicial, custo cresce 20% a.a.</span>
+          </div>
+          <a href="gestao-carregadores.html" target="_blank" class="btn-modelo">&#8599; StationLodgeMobi</a>
+        </div>
+        <div class="card" style="border-color:var(--orange);">
+          <div class="label" style="color:var(--orange);">&#9314; CVE Pro (R$ 30/est./mês +20% a.a.)</div>
+          <div style="font-size:13px;line-height:1.6;margin-top:6px;">
+            Plataforma completa com pagamento integrado.<br>
+            <strong>Custo recorrente:</strong> R$ 30/estação/mês (ano 1)<br>
+            <strong>Reajuste:</strong> +20% ao ano<br>
+            <span style="color:var(--text-dim);font-size:12px;">Sem desenvolvimento, mensalidade proporcional ao número de estações.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Ano</th>
+              <th>Estações</th>
+              <th>&#9312; Manual</th>
+              <th>&#9313; StationLodgeMobi</th>
+              <th>&#9314; CVE Pro (R$ 30/est./mês +20% a.a.)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>2026</td>
+              <td class="num">8</td>
+              <td class="num" style="color:var(--accent);">R$ 0</td>
+              <td class="num" style="color:var(--blue);">R$ 1.640</td>
+              <td class="num" style="color:var(--orange);">R$ 2.880</td>
+            </tr>
+            <tr>
+              <td>2027</td>
+              <td class="num">12</td>
+              <td class="num" style="color:var(--accent);">R$ 0</td>
+              <td class="num" style="color:var(--blue);">R$ 1.968</td>
+              <td class="num" style="color:var(--orange);">R$ 5.184</td>
+            </tr>
+            <tr>
+              <td>2028</td>
+              <td class="num">16</td>
+              <td class="num" style="color:var(--accent);">R$ 0</td>
+              <td class="num" style="color:var(--blue);">R$ 2.362</td>
+              <td class="num" style="color:var(--orange);">R$ 8.294</td>
+            </tr>
+            <tr>
+              <td>2029</td>
+              <td class="num">22</td>
+              <td class="num" style="color:var(--accent);">R$ 0</td>
+              <td class="num" style="color:var(--blue);">R$ 2.834</td>
+              <td class="num" style="color:var(--orange);">R$ 13.686</td>
+            </tr>
+            <tr style="border-top:2px solid var(--accent-dim);">
+              <td>2030</td>
+              <td class="num">28</td>
+              <td class="num" style="color:var(--accent);font-weight:700;">R$ 0</td>
+              <td class="num" style="color:var(--blue);font-weight:700;">R$ 3.401</td>
+              <td class="num" style="color:var(--orange);font-weight:700;">R$ 20.902</td>
+            </tr>
+            <tr style="background:rgba(10,255,183,0.04);font-weight:700;">
+              <td style="color:var(--accent);">Total 5 anos</td>
+              <td class="num" style="color:var(--accent);">—</td>
+              <td class="num" style="color:var(--accent);">R$ 0</td>
+              <td class="num" style="color:var(--accent);">R$ 12.205</td>
+              <td class="num" style="color:var(--accent);">R$ 50.946</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card" style="margin-top:16px;border-color:var(--accent-dim);">
+        <div class="label">Recomendação</div>
+        <p style="font-size:13px;color:var(--text-dim);line-height:1.7;margin-top:8px;">
+          <strong>Início (2026-2027, até 12 estações):</strong> processo manual — custo zero,
+          o síndico faz o rateio com base nas leituras dos medidores.
+          <br><br>
+          <strong>Crescimento (2028+, 16+ estações):</strong> StationLodgeMobi (~R$ 1.640/ano no ano 1, +20% a.a., contrato mínimo 5 anos)
+          — custo total de R$ 12.205 em 5 anos, ~4,2× menor que o CVE Pro.
+          <br><br>
+          <strong>CVE Pro:</strong> Indicado apenas se o condomínio não tiver capacidade técnica
+          para desenvolver a API própria, pois o custo acumulado em 5 anos (R$ 30.960) é ~3,8× maior.
+        </p>
+      </div>
+    </section>
+
+    <!-- DC Fast Charger Analysis -->
+    <section>
+      <div class="section-title">
+        <div class="icon" style="background:var(--purple);color:#fff;">&#9889;</div>
+        Análise de Carregador Rápido CC &mdash; Uso Público
+      </div>
+
+      <div class="metrics" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="label">Carga liberada do condomínio</div>
+          <div class="value blue">75 kW</div>
+          <div class="sub">para recarga pública na calçada</div>
+        </div>
+        <div class="card">
+          <div class="label">Carregadores CC</div>
+          <div class="value orange">2 &times; 30 kW</div>
+          <div class="sub">total 60 kW &middot; folga de 15 kW no ramal de 75 kW</div>
+        </div>
+        <div class="card">
+          <div class="label">Preço ao público</div>
+          <div class="value green">R$ 2,00/kWh</div>
+          <div class="sub">referência rede Tupy/Tupinambá em Passo Fundo</div>
+        </div>
+        <div class="card">
+          <div class="label">EVs em Passo Fundo</div>
+          <div class="value purple">1.146+</div>
+          <div class="sub">crescimento de ~60% a.a. (ABVE)</div>
+        </div>
+      </div>
+
+      <p style="font-size:13px;color:var(--text-dim);margin-bottom:16px;">
+        Baseado nos dados da ABVE para Passo Fundo: 1.146 eletrificados acumulados,
+        552 vendas em 2025, 270 apenas jan&ndash;abr 2026. Projeção de frota EV
+        para até 2031 considera crescimento de 40% a.a. (conservador vs 60% real).
+        Carregadores CC instalados na calçada do condomínio, atendendo ao público 24h.
+      </p>
+
+      <div style="margin-bottom:16px;">
+        <div style="border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);">
+          <div style="position:relative;">
+            <iframe src="https://www.google.com/maps?q=estação+de+recarga+Passo+Fundo&output=embed&z=14" width="100%" height="280" style="border:0;display:block;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            <div style="position:absolute;bottom:8px;left:8px;background:rgba(6,11,23,0.85);padding:6px 10px;border-radius:6px;font-size:10px;color:var(--text-dim);border:1px solid var(--border);">
+              &#128205; Station Lodge &middot; &#128161; Estações CC existentes (Google Maps)
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px;">
+        <div class="label">Análise de Localização Estratégica</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px;">
+          <div>
+            <div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:10px;">
+              <span style="font-size:18px;">&#128205;</span>
+              <div><strong>Station Lodge</strong><br><span style="font-size:12px;color:var(--text-dim);">R. Dr. Vergueiro, 12 — Vila Rodrigues</span></div>
+            </div>
+            <div style="padding:8px;background:var(--surface);border-radius:8px;">
+              <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Pontos fortes da localização</div>
+              <div style="font-size:12px;line-height:1.8;">
+                <div>&#10003; <strong>Zona central</strong> — próximo ao centro de Passo Fundo</div>
+                <div>&#10003; <strong>180 aptos</strong> — público cativo do condomínio</div>
+                <div>&#10003; <strong>Calçada com acesso público</strong> — visibilidade para veículos</div>
+                <div>&#10003; <strong>Rua movimentada</strong> — Dr. Vergueiro conecta bairros ao centro</div>
+                <div>&#10003; <strong>Poucos carregadores CC na região</strong> — demanda não atendida</div>
+              </div>
+            </div>
+            <div style="font-size:12px;color:var(--text-dim);margin-top:10px;">
+              <strong style="color:var(--accent);">Veredito:</strong> Localização estratégica com baixa concorrência direta na região. 
+              A combinação de público cativo (condomínio) + tráfego de passagem + carência de CC nas proximidades 
+              torna o ponto altamente viável para recarga rápida pública.
+            </div>
+          </div>
+          <div style="padding:8px;background:rgba(249,115,22,0.06);border-radius:8px;border:1px solid rgba(249,115,22,0.12);">
+            <div style="font-size:11px;color:var(--orange);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Estações CC existentes em Passo Fundo</div>
+            <div style="font-size:12px;line-height:1.8;">
+              <div style="font-weight:600;color:var(--text);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin:4px 0 2px;">40 kW</div>
+              <div>&#128161; <strong>Luminova 1</strong> — R$ 2,00/kWh</div>
+              <div>&#128161; <strong>Luminova | Sicoob</strong> — R$ 2,00/kWh</div>
+              <div>&#128161; <strong>Compre Mais</strong> — R$ 2,00/kWh</div>
+              <div>&#128161; <strong>Luminova Matriz</strong> — R$ 1,69/kWh</div>
+              <div style="font-weight:600;color:var(--text);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin:6px 0 2px;">30 kW</div>
+              <div>&#128161; <strong>Hiper Sul</strong> — R$ 2,00/kWh</div>
+              <div>&#128161; <strong>Auto Sul</strong> — R$ 2,00/kWh</div>
+              <div>&#128161; <strong>Brasil Sul</strong> — R$ 2,00/kWh</div>
+              <div>&#128161; <strong>Imperial</strong> — R$ 2,00/kWh</div>
+              <div style="margin-top:6px;padding-top:6px;border-top:1px solid rgba(249,115,22,0.12);">
+                &#128205; <strong style="color:var(--accent);">Station Lodge (proposto)</strong> — 2&times;30 kW &middot; R$ 2,00/kWh
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-wrap" style="margin-bottom:16px;">
+        <table>
+          <thead>
+            <tr>
+              <th>Indicador</th>
+              <th class="num">Ano 1</th>
+              <th class="num">Ano 2</th>
+              <th class="num">Ano 3</th>
+              <th class="num">Ano 4</th>
+              <th class="num">Ano 5</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Sessões/mês (2 carregadores)</td>
+              <td class="num">210</td>
+              <td class="num">221</td>
+              <td class="num">232</td>
+              <td class="num">243</td>
+              <td class="num">255</td>
+            </tr>
+            <tr>
+              <td>Energia mensal (kWh)</td>
+              <td class="num" style="color:var(--blue);font-weight:600;">5.250</td>
+              <td class="num" style="color:var(--blue);font-weight:600;">5.513</td>
+              <td class="num" style="color:var(--blue);font-weight:600;">5.788</td>
+              <td class="num" style="color:var(--blue);font-weight:600;">6.078</td>
+              <td class="num" style="color:var(--blue);font-weight:600;">6.381</td>
+            </tr>
+            <tr>
+              <td>Receita mensal (R$ 2,00/kWh)</td>
+              <td class="num" style="color:var(--accent);">R$ 10.500</td>
+              <td class="num" style="color:var(--accent);">R$ 11.025</td>
+              <td class="num" style="color:var(--accent);">R$ 11.576</td>
+              <td class="num" style="color:var(--accent);">R$ 12.155</td>
+              <td class="num" style="color:var(--accent);">R$ 12.763</td>
+            </tr>
+            <tr>
+              <td style="color:var(--orange);">Custo energia (R$ 1,09/kWh)</td>
+              <td class="num" style="color:var(--orange);">-R$ 5.723</td>
+              <td class="num" style="color:var(--orange);">-R$ 6.009</td>
+              <td class="num" style="color:var(--orange);">-R$ 6.309</td>
+              <td class="num" style="color:var(--orange);">-R$ 6.625</td>
+              <td class="num" style="color:var(--orange);">-R$ 6.956</td>
+            </tr>
+            <tr style="font-weight:700;border-top:2px solid var(--accent-dim);">
+              <td style="color:var(--accent);">Margem líquida mensal</td>
+              <td class="num" style="color:var(--accent);font-size:15px;">R$ 4.778</td>
+              <td class="num" style="color:var(--accent);font-size:15px;">R$ 5.016</td>
+              <td class="num" style="color:var(--accent);font-size:15px;">R$ 5.267</td>
+              <td class="num" style="color:var(--accent);font-size:15px;">R$ 5.531</td>
+              <td class="num" style="color:var(--accent);font-size:15px;">R$ 5.807</td>
+            </tr>
+            <tr style="background:rgba(10,255,183,0.04);font-weight:700;">
+              <td style="color:var(--yellow);">Margem líquida anual</td>
+              <td class="num" style="color:var(--yellow);">R$ 57,3k</td>
+              <td class="num" style="color:var(--yellow);">R$ 60,2k</td>
+              <td class="num" style="color:var(--yellow);">R$ 63,2k</td>
+              <td class="num" style="color:var(--yellow);">R$ 66,4k</td>
+              <td class="num" style="color:var(--yellow);">R$ 69,7k</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="card">
+          <div class="label">Premissas do modelo</div>
+          <div style="font-size:13px;line-height:1.8;margin-top:6px;">
+            <div>&bull; 2 carregadores CC de 30 kW (total 60 kW &middot; 75 kW disponíveis &middot; folga de 15 kW)</div>
+            <div>&bull; Custo de cada carregador: ~R$ 40.000 (total R$ 80.000 equipamentos)</div>
+            <div>&bull; 2 a 5 recargas por dia por carregador (média 3,5)</div>
+            <div>&bull; Crescimento anual de recargas: <strong>5%</strong></div>
+            <div>&bull; Cada sessão: ~25 kWh (média 50 min a 30 kW)</div>
+            <div>&bull; Preço ao público: R$ 2,00/kWh (referência rede Tupy/Tupinambá)</div>
+            <div>&bull; Custo da energia: R$ 1,09/kWh (tarifa CPFL)</div>
+            <div>&bull; Margem líquida: R$ 0,91/kWh</div>
+          </div>
+        </div>
+        <div class="card" style="border-color:rgba(10,255,183,0.2);">
+          <div class="label">Referência — Rede Tupy/Tupinambá (Passo Fundo)</div>
+          <div style="font-size:12px;line-height:1.7;margin-top:6px;color:var(--text-dim);">
+            <div style="font-weight:600;color:var(--text);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">40 kW</div>
+            <div><strong style="color:var(--text);">Luminova 1</strong> — R$ 2,00/kWh</div>
+            <div><strong style="color:var(--text);">Luminova | Sicoob</strong> — R$ 2,00/kWh</div>
+            <div><strong style="color:var(--text);">Compre Mais</strong> — R$ 2,00/kWh</div>
+            <div><strong style="color:var(--text);">Luminova Matriz</strong> (40-45 kW) — R$ 1,69/kWh</div>
+            <div style="margin-top:6px;font-weight:600;color:var(--text);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">30 kW</div>
+            <div><strong style="color:var(--text);">Hiper Sul</strong> — R$ 2,00/kWh</div>
+            <div><strong style="color:var(--text);">Auto Sul</strong> — R$ 2,00/kWh</div>
+            <div><strong style="color:var(--text);">Brasil Sul</strong> — R$ 2,00/kWh</div>
+            <div><strong style="color:var(--text);">Imperial</strong> — R$ 2,00/kWh</div>
+          </div>
+          <div style="margin-top:8px;padding:8px;background:var(--surface);border-radius:8px;">
+            <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Custo por recarga (R$ 2,00/kWh)</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px 16px;font-size:12px;">
+              <span>10 kWh</span><span style="color:var(--accent);font-weight:600;text-align:right;">R$ 20,00</span>
+              <span>20 kWh</span><span style="color:var(--accent);font-weight:600;text-align:right;">R$ 40,00</span>
+              <span>30 kWh</span><span style="color:var(--accent);font-weight:600;text-align:right;">R$ 60,00</span>
+              <span>40 kWh</span><span style="color:var(--accent);font-weight:600;text-align:right;">R$ 80,00</span>
+              <span>50 kWh</span><span style="color:var(--accent);font-weight:600;text-align:right;">R$ 100,00</span>
+              <span>60 kWh</span><span style="color:var(--accent);font-weight:600;text-align:right;">R$ 120,00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+          <div class="label">Resumo financeiro 5 anos</div>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:6px;">
+            <div>
+              <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;">Investimento estimado</div>
+              <div style="font-size:24px;font-weight:800;color:var(--orange);">R$ 95.000</div>
+              <div style="font-size:12px;color:var(--text-dim);">2&times;R$ 40.000 (carregadores) + R$ 15.000 (instalação)</div>
+            </div>
+            <div style="padding-top:8px;border-top:1px solid var(--border);">
+              <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;">Margem líquida acumulada (5 anos)</div>
+              <div style="font-size:24px;font-weight:800;color:var(--accent);">R$ 316,8k</div>
+              <div style="font-size:12px;color:var(--text-dim);">crescente: R$ 57,3k &rarr; R$ 69,7k/ano (5% a.a.)</div>
+            </div>
+            <div style="padding-top:8px;border-top:1px solid var(--border);">
+              <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;">Payback estimado</div>
+              <div style="font-size:24px;font-weight:800;color:var(--accent);">~20 meses</div>
+              <div style="font-size:12px;color:var(--text-dim);">R$ 95.000 recuperado no ano 2 (R$ 57,3k ano 1 + 7,5 meses no ano 2)</div>
+            </div>
+            <div style="padding-top:8px;border-top:1px solid var(--border);">
+              <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;">Lucro líquido em 5 anos</div>
+              <div style="font-size:24px;font-weight:800;color:var(--accent);">R$ 221,8k</div>
+              <div style="font-size:12px;color:var(--text-dim);">R$ 316,8k (margem) &minus; R$ 95.000 (investimento)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+  <!-- /TAB 2 -->
+
+  <!-- ============================================================ -->
+  <!-- TAB 3 — ANÁLISE SOLAR -->
+  <!-- ============================================================ -->
+  <div class="tab-content" id="tab-solar">
+
+    <!-- metrics -->
+    <div class="metrics">
+      <div class="card">
+        <div class="label">Carga instalada total</div>
+        <div class="value blue">130 kW</div>
+        <div class="sub">ADM1 (65,2 kW) + ADM2 (64,8 kW)</div>
+      </div>
+      <div class="card">
+        <div class="label">Demanda calculada total</div>
+        <div class="value green">98 kW</div>
+        <div class="sub">ADM1 (41,4 kW) + ADM2 (56,5 kW)</div>
+      </div>
+      <div class="card">
+        <div class="label">Orçamento máximo</div>
+        <div class="value yellow">R$ 200k</div>
+        <div class="sub">sistema fotovoltaico completo</div>
+      </div>
+      <div class="card">
+        <div class="label">Geração anual estimada</div>
+        <div class="value green">64.800 kWh</div>
+        <div class="sub">80 módulos EMSC-625B &middot; 50 kWp</div>
+      </div>
+    </div>
+
+    <!-- ADM1 Load -->
+    <section>
+      <div class="section-title">
+        <div class="icon" style="background:var(--blue-dim);color:var(--blue);">1</div>
+        ADM1 &mdash; Carga Instalada &amp; Demanda
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Grupo</th><th>Item</th><th class="num">Potência (W)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td rowspan="2" style="vertical-align:middle;">Iluminação + Tomadas</td><td>Iluminação + TUGs</td><td class="num">14.000</td></tr>
+            <tr><td style="color:var(--text-dim);font-size:12px;">&rarr; Demanda calculada (a) Tabela 3</td><td class="num" style="color:var(--blue);">3.360</td></tr>
+            <tr><td rowspan="4" style="vertical-align:middle;">Ar Condicionado</td><td>Academia 24.000 BTU</td><td class="num">2.500</td></tr>
+            <tr><td>Coworking 24.000 BTU</td><td class="num">2.500</td></tr>
+            <tr><td>Coworking 12.000 BTU</td><td class="num">2.500</td></tr>
+            <tr><td style="color:var(--text-dim);font-size:12px;">&rarr; Demanda (f) Tabela 8-9 (1-10 unid = 100%)</td><td class="num" style="color:var(--blue);">7.500</td></tr>
+            <tr><td rowspan="2" style="vertical-align:middle;">Motores Monofásicos</td><td>Portão eletrônico (2× 1 CV)</td><td class="num">2.280</td></tr>
+            <tr><td style="color:var(--text-dim);font-size:12px;">&mdash; incluso no grupo g</td><td class="num">&mdash;</td></tr>
+            <tr><td rowspan="6" style="vertical-align:middle;">Motores Trifásicos</td><td>Elevador 1 (15 CV)</td><td class="num">12.820</td></tr>
+            <tr><td>Elevador 2 (15 CV)</td><td class="num">12.820</td></tr>
+            <tr><td>Elevador 3 (15 CV)</td><td class="num">12.820</td></tr>
+            <tr><td>Bomba d'água (3 CV)</td><td class="num">2.950</td></tr>
+            <tr><td style="color:var(--text-dim);font-size:12px;">&rarr; Demanda motores (g) &gt;5 unid &times; 0,7</td><td class="num" style="color:var(--blue);">30.583</td></tr>
+            <tr style="font-weight:700;border-top:2px solid var(--border);">
+              <td>Carga Instalada Total ADM1</td>
+              <td></td>
+              <td class="num" style="color:var(--accent);font-size:16px;">65.190</td>
+            </tr>
+            <tr style="background:rgba(10,255,183,0.04);">
+              <td colspan="2" style="font-weight:700;color:var(--accent);">Demanda Calculada Total (a+f+g)</td>
+              <td class="num" style="color:var(--accent);font-size:16px;">41.443 VA</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ADM2 Load -->
+    <section>
+      <div class="section-title">
+        <div class="icon" style="background:rgba(249,115,22,0.12);color:var(--orange);">2</div>
+        ADM2 &mdash; Carga Instalada &amp; Demanda
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Grupo</th><th>Item</th><th class="num">Potência (W)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td rowspan="2" style="vertical-align:middle;">Iluminação + Tomadas</td><td>Iluminação + TUGs</td><td class="num">4.705</td></tr>
+            <tr><td style="color:var(--text-dim);font-size:12px;">&rarr; Demanda (a) Tabela 3 (4 &lt; C &lt; 5)</td><td class="num" style="color:var(--orange);">2.446,6</td></tr>
+            <tr><td rowspan="6" style="vertical-align:middle;">Ar Condicionado</td><td>Auditório 48.000 BTU (7 unid)</td><td class="num">38.500</td></tr>
+            <tr><td>Mercado/Padaria 12.000 BTU (2 unid)</td><td class="num">2.600</td></tr>
+            <tr><td>Guarda Volumes / Depósito / Suporte 48.000 BTU (3 unid)</td><td class="num">16.500</td></tr>
+            <tr><td>Hall / Snack bar / Apoio Bar 24.000 BTU</td><td class="num">2.500</td></tr>
+            <tr><td style="color:var(--text-dim);font-size:12px;">&rarr; Demanda (f) Tabela 8-9 (11-20 unid = 90%)</td><td class="num" style="color:var(--orange);">54.090</td></tr>
+            <tr style="font-weight:700;border-top:2px solid var(--border);">
+              <td>Carga Instalada Total ADM2</td>
+              <td></td>
+              <td class="num" style="color:var(--accent);font-size:16px;">64.805</td>
+            </tr>
+            <tr style="background:rgba(10,255,183,0.04);">
+              <td colspan="2" style="font-weight:700;color:var(--accent);">Demanda Calculada Total (a+f)</td>
+              <td class="num" style="color:var(--accent);font-size:16px;">56.536,6 VA</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+
+
+    <!-- Component Datasheets -->
+    <section>
+      <div class="section-title">
+        <div class="icon" style="background:var(--accent-dim);color:var(--accent);">&#9881;</div>
+        Especificações dos Componentes (Datasheets Intelbras)
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+        <div class="card">
+          <div class="label">Módulo EMSC-625B N-Type</div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:8px;">
+            <span style="font-size:13px;">Potência: <strong style="color:var(--accent);">625 W</strong></span>
+            <span style="font-size:13px;">Eficiência: <strong>22,77%</strong></span>
+            <span style="font-size:13px;">Vmp: <strong>41,69 V</strong></span>
+            <span style="font-size:13px;">Imp: <strong>13,57 A</strong></span>
+            <span style="font-size:13px;">Voc: <strong>55,71 V</strong></span>
+            <span style="font-size:13px;">Isc: <strong>14,28 A</strong></span>
+            <span style="font-size:13px;">Dimensões: <strong>2465×1134×30 mm</strong></span>
+            <span style="font-size:13px;">Peso: <strong>34,5 kg</strong></span>
+            <span style="font-size:13px;">Tecnologia: <strong>N-Type TOPCon Bifacial</strong></span>
+            <span style="font-size:13px;">Registro INMETRO: <strong>014198/2025</strong></span>
+          </div>
+          <div class="sub" style="margin-top:8px;">Half-Cell · IP68 · Garantia 15/30 anos</div>
+        </div>
+        <div class="card">
+          <div class="label">Inversores IONS Intelbras</div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:8px;">
+            <span style="font-size:13px;color:var(--blue);">IONS-75K T6 AFCI: <strong>75 kW</strong></span>
+            <span style="font-size:12px;color:var(--text-dim);">112,5 kWp · 8 MPPT · 16 strings</span>
+            <span style="font-size:12px;color:var(--text-dim);">Efic. 98,6% · 220/380V · 113,9A</span>
+            <span style="font-size:13px;color:var(--orange);margin-top:4px;">IONS-40K T4 AFCI: <strong>40 kW</strong></span>
+            <span style="font-size:12px;color:var(--text-dim);">60 kWp · 4 MPPT · 8 strings</span>
+            <span style="font-size:12px;color:var(--text-dim);">Efic. 98,5% · 220/380V · 66,9A</span>
+            <span style="font-size:13px;color:var(--purple);margin-top:4px;">IONS-33K T4 AFCI: <strong>33 kW</strong></span>
+            <span style="font-size:12px;color:var(--text-dim);">49,5 kWp · 3 MPPT · 6 strings</span>
+            <span style="font-size:12px;color:var(--text-dim);">Efic. 98,5% · 220/380V · 55,2A</span>
+          </div>
+          <div class="sub" style="margin-top:8px;">AFCI · IP66 · C5 · Garantia 10 anos · Wi-Fi</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Solar System Comparison -->
+    <section>
+      <div class="section-title">
+        <div class="icon" style="background:var(--accent-dim);color:var(--accent);">&#9728;</div>
+        Sistema Fotovoltaico &mdash; Comparativo de Opções
+      </div>
+      <p style="font-size:13px;color:var(--text-dim);margin-bottom:16px;">
+        Premissas: orçamento máximo <strong>R$ 200.000</strong> &middot; Irradiação em Passo Fundo: <strong>4,5 kWh/m²/dia</strong> (média anual) &middot; Perdas do sistema: ~20%
+      </p>
+
+      <div class="compare">
+        <!-- Option 1 -->
+        <div class="compare-card">
+          <div class="title">
+            &#9312; Um inversor grande
+            <span style="font-size:12px;color:var(--text-dim);font-weight:400;">IONS-75K T6 AFCI em uma ADM</span>
+          </div>
+          <ul>
+            <li>
+              <span class="label-item">Inversor</span>
+              <span class="val">IONS-75K T6 AFCI — 75 kW</span>
+            </li>
+            <li>
+              <span class="label-item">Entrada CC máxima</span>
+              <span class="val">112,5 kWp · 8 MPPT · 16 strings</span>
+            </li>
+            <li>
+              <span class="label-item">Potência do sistema</span>
+              <span class="val">~47 kWp (75 painéis × 625W)</span>
+            </li>
+            <li>
+              <span class="label-item">Área ocupada</span>
+              <span class="val">~210 m²</span>
+            </li>
+            <li>
+              <span class="label-item">Painéis EMSC-625B</span>
+              <span class="val">75 módulos bifaciais N-Type</span>
+            </li>
+            <li style="border-bottom:none;">
+              <span class="label-item">Geração mensal estimada</span>
+              <span class="val" style="color:var(--blue);font-weight:700;">~5.400 kWh/mês</span>
+            </li>
+            <li style="border-bottom:none;">
+              <span class="label-item">Cobertura da demanda</span>
+              <span class="val" style="color:var(--accent);font-weight:600;">~23%</span>
+            </li>
+            <li>
+              <span class="label-item">Investimento total</span>
+              <span class="val" style="color:var(--orange);font-weight:700;">~R$ 180.000</span>
+            </li>
+            <li>
+              <span class="label-item">Payback estimado</span>
+              <span class="val">~2,5-3 anos</span>
+            </li>
+            <li>
+              <span class="label-item">Expansão futura</span>
+              <span class="val" style="color:var(--text-dim);">Limitada pelo inversor (112,5 kWp)</span>
+            </li>
+            <li>
+              <span class="label-item">Risco de falha</span>
+              <span class="val" style="color:var(--text-dim);">Alto — queda total se falhar</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Option 2 -->
+        <div class="compare-card" style="border-color:rgba(10,255,183,0.25);">
+          <div class="title">
+            &#9313; Dois inversores
+            <span style="font-size:12px;color:var(--text-dim);font-weight:400;">um por ADM + limitador</span>
+            <span class="badge-rec">Recomendado</span>
+          </div>
+          <ul>
+            <li>
+              <span class="label-item">Inversores</span>
+              <span class="val">IONS-33K T4 (ADM1) + IONS-40K T4 (ADM2)</span>
+            </li>
+            <li>
+              <span class="label-item">Entrada CC máxima</span>
+              <span class="val">ADM1: 49,5 kWp / 6 strings<br>ADM2: 60 kWp / 8 strings</span>
+            </li>
+            <li>
+              <span class="label-item">Potência do sistema</span>
+              <span class="val">~50 kWp (80 painéis × 625W)</span>
+            </li>
+            <li>
+              <span class="label-item">Área ocupada</span>
+              <span class="val">~224 m²</span>
+            </li>
+            <li>
+              <span class="label-item">Painéis EMSC-625B</span>
+              <span class="val">32 ADM1 + 48 ADM2 (bifaciais N-Type)</span>
+            </li>
+            <li style="border-bottom:none;">
+              <span class="label-item">Geração mensal estimada</span>
+              <span class="val" style="color:var(--blue);font-weight:700;">~5.760 kWh/mês</span>
+            </li>
+            <li style="border-bottom:none;">
+              <span class="label-item">Cobertura da demanda</span>
+              <span class="val" style="color:var(--accent);font-weight:600;">ADM1 ~27% | ADM2 ~22%</span>
+            </li>
+            <li>
+              <span class="label-item">Investimento total</span>
+              <span class="val" style="color:var(--orange);font-weight:700;">~R$ 196.000</span>
+            </li>
+            <li>
+              <span class="label-item">Payback estimado</span>
+              <span class="val">~2,5-3 anos</span>
+            </li>
+            <li>
+              <span class="label-item">Expansão futura</span>
+              <span class="val" style="color:var(--accent);">Modular — amplia por ADM (até 109,5 kWp total)</span>
+            </li>
+            <li>
+              <span class="label-item">Risco de falha</span>
+              <span class="val" style="color:var(--accent);">Baixo — isolamento por ADM</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recommendation -->
+    <section>
+      <div class="section-title">
+        <div class="icon" style="background:var(--accent-dim);color:var(--accent);">&#10003;</div>
+        Recomendação Final
+      </div>
+
+      <div class="rec-box">
+        <div class="rec-title">&#9313; Dois inversores (IONS-33K T4 + IONS-40K T4) &mdash; Recomendado</div>
+        <p>
+          Baseado nos datasheets oficiais Intelbras (EMSC-625B e IONS série):
+          <br><br>
+          <strong>ADM1 — IONS-33K T4 AFCI (33 kW / 49,5 kWp / 3 MPPT / 6 strings):</strong>
+          32 módulos EMSC-625B (~20 kWp) atendem ~27% da demanda calculada de 41,4 kW.
+          Ideal para o bloco academia + coworking.
+          <br><br>
+          <strong>ADM2 — IONS-40K T4 AFCI (40 kW / 60 kWp / 4 MPPT / 8 strings):</strong>
+          48 módulos EMSC-625B (~30 kWp) atendem ~22% da demanda de 56,5 kW.
+          Ideal para auditório e salas comerciais com alto consumo de ar condicionado.
+          <br><br>
+          <strong>Por que dois inversores:</strong> O IONS-75K T6 AFCI único (75 kW) é viável
+          mas concentra a geração em um só ponto. Com dois inversores T4, cada ADM opera
+          de forma independente, com expansão futura de até 109,5 kWp combinados.
+          <br><br>
+          <strong>Projeção 5 anos:</strong> Com a expansão do condomínio, o sistema modular
+          permite adicionar painéis gradualmente em cada ADM.
+        </p>
+      </div>
+    </section>
+
+    <!-- Installation Diagram -->
+    <section>
+      <div class="section-title">
+        <div class="icon" style="background:var(--blue-dim);color:var(--blue);">&#9889;</div>
+        Diagrama de Instalação Sugerido
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Componente</th>
+              <th>ADM1</th>
+              <th>ADM2</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Potência do inversor</td>
+              <td><span class="tag adm1">IONS-33K T4 AFCI — 33 kW</span></td>
+              <td><span class="tag adm2">IONS-40K T4 AFCI — 40 kW</span></td>
+            </tr>
+            <tr>
+              <td>MPPT / Strings</td>
+              <td>3 MPPT · 6 strings</td>
+              <td>4 MPPT · 8 strings</td>
+            </tr>
+            <tr>
+              <td>Painéis EMSC-625B (625 W)</td>
+              <td>32 módulos (~20 kWp)</td>
+              <td>48 módulos (~30 kWp)</td>
+            </tr>
+            <tr>
+              <td>Área necessária</td>
+              <td>~90 m²</td>
+              <td>~135 m²</td>
+            </tr>
+            <tr>
+              <td>Local sugerido</td>
+              <td>Terraço / cobertura ADM1</td>
+              <td>Terraço / cobertura ADM2</td>
+            </tr>
+            <tr>
+              <td>Disjuntor CA</td>
+              <td>3 × 63 A</td>
+              <td>3 × 80 A</td>
+            </tr>
+            <tr>
+              <td>Carregadores EV</td>
+              <td>4 × 7,4 kW (limitados via software)</td>
+              <td>4 × 7,4 kW (limitados via software)</td>
+            </tr>
+            <tr>
+              <td>Controlador de demanda</td>
+              <td colspan="2" style="text-align:center;">OCPP / StationLodgeMobi + limitador de corrente (R$ 3.000)</td>
+            </tr>
+            <tr>
+              <td>Custo total estimado</td>
+              <td style="color:var(--blue);font-weight:700;">~R$ 87.000</td>
+              <td style="color:var(--orange);font-weight:700;">~R$ 109.000</td>
+            </tr>
+            <tr style="background:rgba(10,255,183,0.04);">
+              <td style="font-weight:700;color:var(--accent);">Total geral</td>
+              <td colspan="2" style="font-weight:700;color:var(--accent);font-size:15px;">R$ 196.000 + R$ 3.000 (limitador) = R$ 199.000</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Payback Calculation -->
+    <section>
+      <div class="section-title">
+        <div class="icon" style="background:var(--yellow);color:#000;">&#36;</div>
+        Cálculo do Payback &mdash; Passo a Passo
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+        <div class="card">
+          <div class="label">Premissas do cálculo</div>
+          <div style="font-size:13px;line-height:1.8;margin-top:6px;">
+            <div>Sistema: <strong>50 kWp</strong> (80 × EMSC-625B)</div>
+            <div>Investimento total: <strong style="color:var(--orange);">R$ 199.000</strong></div>
+            <div>Irradiação local: <strong>4,5 kWh/m²/dia</strong></div>
+            <div>Perdas do sistema: <strong>20%</strong> (cabos, temperatura, sujeira, inversor)</div>
+            <div>Geração anual: <strong>64.800 kWh</strong></div>
+            <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">
+              <strong>Tarifa CPFL RGE Sul (RS):</strong><br>
+              <span style="font-size:11px;color:var(--text-dim);">Classe comercial B3 — vigência 19/04/2026</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px 12px;margin-top:4px;font-size:12px;">
+              <span style="color:var(--text-dim);">TE (energia):</span><span>R$ 0,260/kWh</span>
+              <span style="color:var(--text-dim);">TUSD (distribuição):</span><span>R$ 0,344/kWh</span>
+              <span style="color:var(--text-dim);font-weight:600;">Tarifa base (TE+TUSD):</span><span style="font-weight:600;">R$ 0,604/kWh</span>
+              <span style="color:var(--text-dim);">+ ICMS (17%) + PIS/COFINS (~9%) + Bandeira:</span><span style="color:var(--orange);">~80%</span>
+              <span style="color:var(--accent);font-weight:700;">Tarifa efetiva com tributos:</span><span style="color:var(--accent);font-weight:700;">R$ 1,09/kWh</span>
+            </div>
+            <div>Reajuste anual da tarifa: <strong>5%</strong></div>
+            <div>Degradação dos painéis: <strong>0,3%/ano</strong></div>
+            <div>Custo de manutenção: <strong>R$ 600/ano</strong> (limpeza + inspeção)</div>
+          </div>
+        </div>
+        <div class="card" style="border-color:rgba(10,255,183,0.2);">
+          <div class="label">Resultado</div>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:6px;">
+            <div>
+              <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;">Payback Simples</div>
+              <div style="font-size:32px;font-weight:800;color:var(--accent);">~2,8 anos</div>
+              <div style="font-size:12px;color:var(--text-dim);">R$ 199.000 &divide; R$ 70.632/ano (R$ 1,09/kWh)</div>
+            </div>
+            <div style="padding-top:8px;border-top:1px solid var(--border);">
+              <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;">Payback com reajuste + degradação</div>
+              <div style="font-size:32px;font-weight:800;color:var(--accent);">~2,9 anos</div>
+              <div style="font-size:12px;color:var(--text-dim);">considerando inflação de 5% e perda de 0,3%/ano</div>
+            </div>
+            <div style="padding-top:8px;border-top:1px solid var(--border);">
+              <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;">Economia em 25 anos</div>
+              <div style="font-size:32px;font-weight:800;color:var(--blue);">R$ 3.200.000</div>
+              <div style="font-size:12px;color:var(--text-dim);">valor acumulado descontando manutenção e degradação</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  <!-- /TAB 3 -->
+
+  <footer>
+    <p>Fontes: ABVE · Sincodiv/Fenabrave-RS · DetranRS · GZH · Dados fornecidos pelo usuário</p>
+    <p style="margin-top:6px;">Análise gerada em julho de 2026 · Projeções sujeitas a variações de mercado</p>
+  </footer>
+
+</div>
+
+<script>
+(function() {
+  const tabs = document.querySelectorAll('.tab-btn');
+  const contents = document.querySelectorAll('.tab-content');
+
+  tabs.forEach(btn => {
+    btn.addEventListener('click', function() {
+      const target = this.dataset.tab;
+      tabs.forEach(b => b.classList.remove('active'));
+      contents.forEach(c => c.classList.remove('active'));
+      this.classList.add('active');
+      document.getElementById(target).classList.add('active');
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

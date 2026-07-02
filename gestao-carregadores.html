@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StationLodgeMobi — Gestão de Carregadores</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #060b17;
+  --surface: rgba(255,255,255,0.04);
+  --surface-hover: rgba(255,255,255,0.07);
+  --border: rgba(255,255,255,0.08);
+  --text: #e8edf5;
+  --text-dim: rgba(255,255,255,0.45);
+  --accent: #0affb7;
+  --accent-dim: rgba(10,255,183,0.15);
+  --blue: #4b7bff;
+  --blue-dim: rgba(75,123,255,0.12);
+  --purple: #a855f7;
+  --orange: #f97316;
+  --red: #ef4444;
+  --green: #22c55e;
+  --yellow: #facc15;
+  --radius: 14px;
+}
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 24px;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+* { position: relative; z-index: 1; }
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.header h1 {
+  font-size: 22px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent), var(--blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.header .sub {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.header .voltar {
+  font-size: 13px;
+  color: var(--blue);
+  text-decoration: none;
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: var(--blue-dim);
+  font-weight: 500;
+}
+.header .voltar:hover { background: rgba(75,123,255,0.2); }
+
+.top-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.top-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+.top-card .label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.top-card .value { font-size: 24px; font-weight: 800; }
+.top-card .sub { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+.top-card input {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 700;
+  padding: 4px 10px;
+  width: 100px;
+  font-family: 'Inter', sans-serif;
+}
+
+.gauge-wrap {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.gauge-bar {
+  flex: 1;
+  height: 10px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 5px;
+  overflow: hidden;
+}
+.gauge-bar .fill {
+  height: 100%;
+  border-radius: 5px;
+  transition: width 0.5s, background 0.5s;
+}
+.gauge-bar .fill.ok { background: var(--accent); }
+.gauge-bar .fill.warn { background: var(--orange); }
+.gauge-bar .fill.crit { background: var(--red); }
+
+.status-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.status-badge.ok { background: rgba(34,197,94,0.15); color: var(--green); }
+.status-badge.warn { background: rgba(249,115,22,0.15); color: var(--orange); }
+.status-badge.crit { background: rgba(239,68,68,0.15); color: var(--red); }
+
+.charger-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.charger {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  transition: 0.3s;
+}
+.charger.ocupado { border-color: rgba(75,123,255,0.3); }
+.charger.livre { border-color: var(--border); }
+.charger .topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.charger .id { font-size: 12px; font-weight: 700; color: var(--text-dim); }
+.charger .tag-status {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+.charger .tag-status.livre { background: rgba(34,197,94,0.12); color: var(--green); }
+.charger .tag-status.ocupado { background: rgba(75,123,255,0.12); color: var(--blue); }
+.charger .tag-status.limitado { background: rgba(249,115,22,0.12); color: var(--orange); }
+.charger .carro { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.charger .detalhes { font-size: 12px; color: var(--text-dim); line-height: 1.6; }
+.charger .actions { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+.charger .actions button {
+  padding: 5px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: 0.2s;
+}
+.charger .actions .btn-add { background: var(--blue-dim); color: var(--blue); }
+.charger .actions .btn-add:hover { background: rgba(75,123,255,0.25); }
+.charger .actions .btn-remove { background: rgba(239,68,68,0.12); color: var(--red); }
+.charger .actions .btn-remove:hover { background: rgba(239,68,68,0.25); }
+.charger .actions .btn-tag { background: rgba(168,85,247,0.12); color: var(--purple); }
+.charger .actions .btn-tag:hover { background: rgba(168,85,247,0.25); }
+.charger .actions .btn-tag-off { background: rgba(255,255,255,0.06); color: var(--text-dim); }
+.charger .actions .btn-tag-off:hover { background: rgba(255,255,255,0.1); }
+.charger .prio-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.charger .prio-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+.charger .prio-1st { background: var(--accent-dim); color: var(--accent); }
+.charger .prio-mid { background: rgba(249,115,22,0.12); color: var(--orange); }
+.charger .prio-last { background: rgba(239,68,68,0.12); color: var(--red); }
+.charger .prio-eq { background: rgba(255,255,255,0.06); color: var(--text-dim); }
+.charger .prio-label { font-size: 11px; font-weight: 600; }
+
+.section-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tabs-sec {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 4px;
+  width: fit-content;
+}
+.tabs-sec button {
+  padding: 6px 16px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: 0.2s;
+}
+.tabs-sec button.active { background: var(--surface-hover); color: var(--text); }
+
+.panel { display: none; }
+.panel.active { display: block; }
+
+.table-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { background: var(--surface); color: var(--text-dim); font-weight: 600; text-align: left; padding: 10px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); }
+td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+tr:hover td { background: rgba(255,255,255,0.02); }
+
+.custo-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.custo-field input {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 4px 10px;
+  width: 80px;
+  font-family: 'Inter', sans-serif;
+}
+
+.btn-relatorio {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: 0.2s;
+  margin-top: 12px;
+}
+.btn-relatorio:hover { background: rgba(10,255,183,0.25); }
+
+.sim-bar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.sim-bar .sim-label { font-size: 12px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; }
+.sim-bar .btn-sim {
+  padding: 5px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: 0.2s;
+}
+.sim-bar .btn-sim.pico { background: rgba(249,115,22,0.15); color: var(--orange); }
+.sim-bar .btn-sim.pico:hover { background: rgba(249,115,22,0.25); }
+.sim-bar .btn-sim.limite { background: rgba(239,68,68,0.12); color: var(--red); }
+.sim-bar .btn-sim.limite:hover { background: rgba(239,68,68,0.25); }
+.sim-bar .btn-sim.saida { background: rgba(168,85,247,0.12); color: var(--purple); }
+.sim-bar .btn-sim.saida:hover { background: rgba(168,85,247,0.25); }
+.sim-bar .btn-sim.reset { background: rgba(255,255,255,0.06); color: var(--text-dim); }
+.sim-bar .btn-sim.reset:hover { background: rgba(255,255,255,0.1); }
+
+.balance-group {
+  display: flex;
+  gap: 4px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 8px;
+  padding: 3px;
+}
+.balance-group .btn-balance {
+  padding: 4px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  background: transparent;
+  color: var(--text-dim);
+  transition: 0.2s;
+}
+.balance-group .btn-balance:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+.balance-group .btn-balance.active {
+  background: var(--accent-dim);
+  color: var(--accent);
+  box-shadow: 0 0 12px rgba(10,255,183,0.1);
+}
+.sim-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.sim-toggle input[type="checkbox"] {
+  appearance: none;
+  width: 36px;
+  height: 20px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+  position: relative;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.sim-toggle input[type="checkbox"]::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: #666;
+  border-radius: 50%;
+  transition: 0.2s;
+}
+.sim-toggle input[type="checkbox"]:checked { background: var(--accent-dim); }
+.sim-toggle input[type="checkbox"]:checked::after { left: 18px; background: var(--accent); }
+
+.chart-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.chart-wrap .chart-title { font-size: 12px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+.chart-wrap canvas { width: 100%; height: 80px; display: block; border-radius: 8px; }
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  z-index: 999;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: 0.3s;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.info { border-color: var(--blue-dim); }
+.toast.warn { border-color: rgba(249,115,22,0.3); }
+.toast.success { border-color: rgba(34,197,94,0.3); }
+
+@media print {
+  .header .voltar, .actions, .btn-relatorio, .sim-bar, .chart-wrap { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>&#9889; StationLodgeMobi — Gestão de Carregadores</h1>
+    <div class="sub">Plataforma de gestão do <strong>Station Lodge</strong> &middot; 180 aptos &middot; Passo Fundo/RS &middot; <a href="https://www.stationlodge.com.br/" target="_blank" style="color:var(--blue);text-decoration:none;">stationlodge.com.br</a></div>
+  </div>
+  <a href="passo-fundo-ev.html" class="voltar">&larr; Voltar</a>
+</div>
+
+<div class="top-bar" id="topBar">
+  <div class="top-card">
+    <div class="label">Preço do kWh</div>
+    <div class="custo-field">
+      <span style="font-size:13px;color:var(--text-dim);">R$</span>
+      <input type="number" id="precoKwh" value="1.09" step="0.01" min="0" oninput="recalcularTudo()">
+    </div>
+  </div>
+  <div class="top-card">
+    <div class="label">Limite do Disjuntor (A)</div>
+    <div class="custo-field">
+      <input type="number" id="limiteCorrente" value="200" step="1" min="1" oninput="recalcularTudo()">
+      <span style="font-size:13px;color:var(--text-dim);">A</span>
+    </div>
+  </div>
+  <div class="top-card">
+    <div class="label">Corrente de Entrada</div>
+    <div class="gauge-wrap">
+      <span class="value" id="correnteEntrada" style="font-size:24px;font-weight:800;">0</span>
+      <span style="font-size:13px;color:var(--text-dim);">A</span>
+    </div>
+    <div class="gauge-bar"><div class="fill" id="gaugeFill" style="width:0%;"></div></div>
+  </div>
+  <div class="top-card">
+    <div class="label">Status do Sistema</div>
+    <span class="status-badge ok" id="statusBadge">Normal</span>
+    <div class="sub" style="margin-top:4px;">Carga total: <span id="cargaTotal">0</span> kW &middot; <span id="modoLabel">Equalização</span></div>
+  </div>
+</div>
+
+<div class="sim-bar">
+  <label class="sim-toggle">
+    <input type="checkbox" id="autoSim" checked onchange="toggleAutoSim()">
+    Simulação automática
+  </label>
+  <span style="color:var(--text-dim);font-size:12px;">&middot;</span>
+  <span class="sim-label">Balanceamento:</span>
+  <div class="balance-group">
+    <button class="btn-balance active" data-mode="0" onclick="setModoBalanceamento(0,this)">Equalização</button>
+    <button class="btn-balance" data-mode="1" onclick="setModoBalanceamento(1,this)">Prioridade 1º</button>
+    <button class="btn-balance" data-mode="2" onclick="setModoBalanceamento(2,this)">Prioridade Último</button>
+  </div>
+  <span style="color:var(--text-dim);font-size:12px;">&middot;</span>
+  <span class="sim-label">Cenários:</span>
+  <button class="btn-sim pico" onclick="simularPico()">&#9889; Horário de pico</button>
+  <button class="btn-sim limite" onclick="simularLimite()">&#9888; Disjuntor no limite</button>
+  <button class="btn-sim saida" onclick="simularSaidaMassa()">&#128101; Saída em massa</button>
+  <button class="btn-sim reset" onclick="simularReset()">&#8635; Resetar</button>
+</div>
+
+<div class="section-title">&#9889; Carregadores</div>
+<div class="charger-grid" id="chargerGrid"></div>
+
+<div class="chart-wrap">
+  <div class="chart-title">&#9889; Corrente de Entrada (últimos 60s)</div>
+  <canvas id="chartCanvas" height="80"></canvas>
+</div>
+
+<div class="tabs-sec">
+  <button class="active" onclick="mudarAba('usuarios',this)">&#128100; Usuários &amp; Tags</button>
+  <button onclick="mudarAba('relatorio',this)">&#128196; Relatório de Recargas</button>
+  <button onclick="mudarAba('completo',this)">&#128203; Relatório Completo</button>
+</div>
+
+<div class="panel active" id="panelUsuarios">
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Usuário</th><th>Tag RFID</th><th>Status</th><th>Carregador</th><th>Ações</th></tr></thead>
+      <tbody id="tabelaUsuarios"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="panel" id="panelRelatorio">
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Usuário</th><th>Tag</th><th>Carregador</th><th>Carro</th><th>Início</th><th>Término</th><th>Consumo (kWh)</th><th>Custo (R$)</th></tr></thead>
+      <tbody id="tabelaRelatorio"></tbody>
+    </table>
+  </div>
+  <button class="btn-relatorio" onclick="gerarRelatorio()">&#128196; Exportar Relatório</button>
+</div>
+
+<div class="panel" id="panelCompleto">
+  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
+    <button class="btn-relatorio" onclick="exportarPDF()">&#128203; Exportar PDF Completo</button>
+  </div>
+  <div class="table-wrap" style="margin-bottom:12px;">
+    <table>
+      <thead><tr><th>#</th><th>Carregador</th><th>Status</th><th>Carro</th><th>Usuário</th><th>Tag</th><th>Ordem</th><th>Potência</th><th>Consumo (kWh)</th><th>Tempo</th></tr></thead>
+      <tbody id="tabelaCompleto"></tbody>
+    </table>
+  </div>
+  <div class="section-title">&#128196; Histórico de Recargas</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Usuário</th><th>Tag</th><th>Carregador</th><th>Carro</th><th>Início</th><th>Término</th><th>Consumo (kWh)</th><th>Custo (R$)</th></tr></thead>
+      <tbody id="tabelaCompletoHistorico"></tbody>
+    </table>
+  </div>
+</div>
+
+<div style="text-align:center;padding:24px 0 8px;font-size:12px;color:var(--text-dim);border-top:1px solid var(--border);margin-top:24px;">
+  StationLodgeMobi &mdash; Plataforma de gestão do <a href="https://www.stationlodge.com.br/" target="_blank" style="color:var(--blue);text-decoration:none;">Station Lodge</a> &middot; Passo Fundo/RS &middot; 180 apartamentos
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const carrosDisponiveis = [
+  { nome: 'BYD Dolphin Mini', bateria: 38, consumo: 0.15 },
+  { nome: 'BYD Dolphin', bateria: 44.9, consumo: 0.16 },
+  { nome: 'Geely EX2', bateria: 37, consumo: 0.14 },
+  { nome: 'VW ID.4', bateria: 77, consumo: 0.19 },
+  { nome: 'Chevrolet Bolt', bateria: 66, consumo: 0.17 },
+  { nome: 'Nissan Leaf', bateria: 40, consumo: 0.16 },
+  { nome: 'Renault Zoe', bateria: 52, consumo: 0.15 },
+  { nome: 'BMW i3', bateria: 42, consumo: 0.15 },
+  { nome: 'Tesla Model 3', bateria: 60, consumo: 0.14 },
+  { nome: 'Jaguar I-Pace', bateria: 90, consumo: 0.21 },
+  { nome: 'BYD Yuan Plus', bateria: 50, consumo: 0.15 },
+  { nome: 'GWM Ora 03', bateria: 48, consumo: 0.16 },
+  { nome: 'CAOA Chery iCar', bateria: 30, consumo: 0.13 },
+  { nome: 'Ford Mustang Mach-E', bateria: 75, consumo: 0.18 },
+  { nome: 'Volvo XC40 Recharge', bateria: 78, consumo: 0.20 },
+];
+
+const usuarios = [
+  { nome: 'Carlos Silva', tag: 'RFID-A001', ativa: true },
+  { nome: 'Ana Pereira', tag: 'RFID-A002', ativa: true },
+  { nome: 'João Santos', tag: 'RFID-A003', ativa: true },
+  { nome: 'Marina Oliveira', tag: 'RFID-A004', ativa: true },
+  { nome: 'Pedro Costa', tag: 'RFID-A005', ativa: true },
+  { nome: 'Lucia Mendes', tag: 'RFID-A006', ativa: true },
+  { nome: 'Rafael Souza', tag: 'RFID-A007', ativa: true },
+  { nome: 'Beatriz Lima', tag: 'RFID-A008', ativa: true },
+  { nome: 'Thiago Alves', tag: 'RFID-A009', ativa: true },
+  { nome: 'Camila Rocha', tag: 'RFID-A010', ativa: true },
+];
+
+let chargers = [];
+let relatorio = [];
+let historicoRecargas = [];
+let relatorioGerado = [];
+let simulacaoAtiva = true;
+let modoBalanceamento = 0; // 0=equalização, 1=prioridade primeiro, 2=prioridade último
+let correnteHistory = [];
+let chartCtx = null;
+let proximaOrdem = 1;
+
+function setModoBalanceamento(modo, btn) {
+  modoBalanceamento = modo;
+  document.querySelectorAll('.btn-balance').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const nomes = ['Equalização', 'Prioridade 1º', 'Prioridade Último'];
+  document.getElementById('modoLabel').textContent = nomes[modo];
+  mostrarToast('Balanceamento: ' + nomes[modo], 'info');
+}
+
+function toggleAutoSim() {
+  simulacaoAtiva = document.getElementById('autoSim').checked;
+  mostrarToast(simulacaoAtiva ? 'Simulação automática ativada' : 'Simulação automática desativada', 'info');
+}
+
+function mostrarToast(msg, tipo) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + (tipo || 'info');
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function simularPico() {
+  let count = 0;
+  for (let i = 0; i < chargers.length; i++) {
+    if (chargers[i].status === 'livre') {
+      adicionarCarro(i);
+      count++;
+    }
+  }
+  mostrarToast('Horário de pico: ' + count + ' carros conectados', 'warn');
+}
+
+function simularLimite() {
+  const atual = parseInt(document.getElementById('limiteCorrente').value) || 200;
+  let correnteAtual = 0;
+  for (const c of chargers) {
+    if (c.status === 'ocupado' || c.status === 'limitado') {
+      correnteAtual += (c.potenciaAtual * 1000) / 220;
+    }
+  }
+  const novoLimite = Math.max(Math.round(correnteAtual * 0.85), 50);
+  document.getElementById('limiteCorrente').value = novoLimite;
+  mostrarToast('Disjuntor ajustado para ' + novoLimite + 'A — balanceamento ativado', 'warn');
+  recalcularTudo();
+}
+
+function simularSaidaMassa() {
+  let count = 0;
+  for (let i = chargers.length - 1; i >= 0; i--) {
+    if (chargers[i].status !== 'livre') {
+      removerCarro(i);
+      count++;
+    }
+  }
+  mostrarToast('Saída em massa: ' + count + ' carros desconectados', 'info');
+}
+
+function simularReset() {
+  document.getElementById('limiteCorrente').value = 200;
+  document.getElementById('precoKwh').value = 1.09;
+  for (let i = chargers.length - 1; i >= 0; i--) {
+    if (chargers[i].status !== 'livre') {
+      removerCarro(i);
+    }
+  }
+  correnteHistory = [];
+  mostrarToast('Sistema resetado', 'success');
+}
+
+function init() {
+  for (let i = 0; i < 8; i++) {
+    chargers.push({
+      id: i + 1,
+      status: 'livre',
+      carro: null,
+      usuario: null,
+      potenciaNominal: 7.4,
+      potenciaAtual: 0,
+      energiaTotal: 0,
+      tempoCarga: 0,
+      iniciadoEm: null,
+      tagHabilitada: true,
+      corrente: 0,
+      ordem: 0,
+    });
+  }
+  const canvas = document.getElementById('chartCanvas');
+  chartCtx = canvas.getContext('2d');
+  renderizar();
+  setInterval(() => {
+    simularCarga();
+    autoSimular();
+    recalcularTudo();
+    registrarCorrente();
+    desenharGrafico();
+    renderizar();
+  }, 2000);
+}
+
+function autoSimular() {
+  if (!simulacaoAtiva) return;
+  // random arrival: ~20% chance per interval if there's an empty charger
+  const livres = chargers.filter(c => c.status === 'livre').length;
+  if (livres > 0 && Math.random() < 0.25) {
+    const idx = chargers.findIndex(c => c.status === 'livre');
+    if (idx >= 0) {
+      adicionarCarro(idx);
+      mostrarToast('Novo carro conectado no Carregador ' + (idx + 1), 'success');
+    }
+  }
+  // random departure: ~5% chance per interval for occupied chargers
+  const ocupados = chargers.filter(c => c.status === 'ocupado' || c.status === 'limitado').length;
+  if (ocupados > 1 && Math.random() < 0.08) {
+    const ocupadosIdx = [];
+    for (let i = 0; i < chargers.length; i++) {
+      if (chargers[i].status === 'ocupado' || chargers[i].status === 'limitado') ocupadosIdx.push(i);
+    }
+    if (ocupadosIdx.length > 0) {
+      const idx = ocupadosIdx[Math.floor(Math.random() * ocupadosIdx.length)];
+      const nome = chargers[idx].carro.nome;
+      removerCarro(idx);
+      mostrarToast(nome + ' desconectado do Carregador ' + (idx + 1), 'info');
+    }
+  }
+}
+
+function registrarCorrente() {
+  let total = 0;
+  for (const c of chargers) {
+    if (c.status === 'ocupado' || c.status === 'limitado') {
+      total += (c.potenciaAtual * 1000) / 220;
+    }
+  }
+  correnteHistory.push(total);
+  if (correnteHistory.length > 30) correnteHistory.shift();
+}
+
+function desenharGrafico() {
+  if (!chartCtx) return;
+  const canvas = chartCtx.canvas;
+  const w = canvas.width = canvas.clientWidth * 2;
+  const h = canvas.height = 80 * 2;
+  const dpr = 1;
+  chartCtx.clearRect(0, 0, w, h);
+
+  if (correnteHistory.length < 2) {
+    chartCtx.fillStyle = 'rgba(255,255,255,0.2)';
+    chartCtx.font = '12px Inter, sans-serif';
+    chartCtx.textAlign = 'center';
+    chartCtx.fillText('Aguardando dados...', w / 2, h / 2 + 4);
+    return;
+  }
+
+  const limite = getLimite();
+  const padding = 4;
+  const chartW = w - padding * 2;
+  const chartH = h - padding * 2;
+  const maxVal = Math.max(limite * 1.2, Math.max(...correnteHistory) * 1.1);
+
+  // draw limit line
+  const limitY = padding + chartH - (limite / maxVal) * chartH;
+  chartCtx.strokeStyle = 'rgba(239,68,68,0.4)';
+  chartCtx.setLineDash([4, 4]);
+  chartCtx.lineWidth = 1;
+  chartCtx.beginPath();
+  chartCtx.moveTo(padding, limitY);
+  chartCtx.lineTo(padding + chartW, limitY);
+  chartCtx.stroke();
+  chartCtx.setLineDash([]);
+
+  // draw fill
+  const step = chartW / (Math.max(correnteHistory.length - 1, 1));
+  chartCtx.beginPath();
+  chartCtx.moveTo(padding, padding + chartH);
+  for (let i = 0; i < correnteHistory.length; i++) {
+    const x = padding + i * step;
+    const y = padding + chartH - (correnteHistory[i] / maxVal) * chartH;
+    if (i === 0) chartCtx.lineTo(x, y);
+    else chartCtx.lineTo(x, y);
+  }
+  chartCtx.lineTo(padding + (correnteHistory.length - 1) * step, padding + chartH);
+  chartCtx.closePath();
+  const grad = chartCtx.createLinearGradient(0, padding, 0, padding + chartH);
+  grad.addColorStop(0, 'rgba(10,255,183,0.3)');
+  grad.addColorStop(1, 'rgba(10,255,183,0.02)');
+  chartCtx.fillStyle = grad;
+  chartCtx.fill();
+
+  // draw line
+  chartCtx.beginPath();
+  for (let i = 0; i < correnteHistory.length; i++) {
+    const x = padding + i * step;
+    const y = padding + chartH - (correnteHistory[i] / maxVal) * chartH;
+    if (i === 0) chartCtx.moveTo(x, y);
+    else chartCtx.lineTo(x, y);
+  }
+  chartCtx.strokeStyle = '#0affb7';
+  chartCtx.lineWidth = 2;
+  chartCtx.stroke();
+
+  // current value label
+  const last = correnteHistory[correnteHistory.length - 1];
+  chartCtx.fillStyle = '#0affb7';
+  chartCtx.font = 'bold 11px Inter, sans-serif';
+  chartCtx.textAlign = 'right';
+  chartCtx.fillText(Math.round(last) + ' A', w - padding, padding + 14);
+}
+
+function getPreco() { return parseFloat(document.getElementById('precoKwh').value) || 1.09; }
+function getLimite() { return parseFloat(document.getElementById('limiteCorrente').value) || 200; }
+
+function carroAleatorio() {
+  return carrosDisponiveis[Math.floor(Math.random() * carrosDisponiveis.length)];
+}
+function usuarioAleatorio() {
+  return usuarios[Math.floor(Math.random() * usuarios.length)];
+}
+
+function adicionarCarro(idx) {
+  const c = chargers[idx];
+  if (c.status !== 'livre') return;
+  const carro = carroAleatorio();
+  const usuario = usuarioAleatorio();
+  c.status = 'ocupado';
+  c.carro = carro;
+  c.usuario = usuario;
+  c.potenciaAtual = c.potenciaNominal;
+  c.energiaTotal = 0;
+  c.tempoCarga = 0;
+  c.iniciadoEm = new Date();
+  c.corrente = (c.potenciaAtual * 1000) / 220;
+  c.ordem = proximaOrdem++;
+  renderizar();
+  recalcularTudo();
+}
+
+function removerCarro(idx) {
+  const c = chargers[idx];
+  if (c.status === 'livre') return;
+  const consumo = c.energiaTotal;
+  const custo = consumo * getPreco();
+  const inicio = c.iniciadoEm;
+  const termino = new Date();
+  relatorio.push({
+    usuario: c.usuario.nome,
+    tag: c.usuario.tag,
+    carregador: 'Carregador ' + c.id,
+    carro: c.carro.nome,
+    inicio: inicio,
+    termino: termino,
+    consumo: consumo,
+    custo: custo,
+  });
+  // add to historico for report
+  historicoRecargas.push({
+    usuario: c.usuario.nome,
+    tag: c.usuario.tag,
+    carregador: 'Carregador ' + c.id,
+    carro: c.carro.nome,
+    inicio: formatarData(inicio),
+    termino: formatarData(termino),
+    consumo: consumo.toFixed(1),
+    custo: custo.toFixed(2),
+  });
+  c.status = 'livre';
+  c.carro = null;
+  c.usuario = null;
+  c.potenciaAtual = 0;
+  c.energiaTotal = 0;
+  c.tempoCarga = 0;
+  c.iniciadoEm = null;
+  c.corrente = 0;
+  c.ordem = 0;
+  renderizar();
+  recalcularTudo();
+}
+
+function toggleTag(idx) {
+  chargers[idx].tagHabilitada = !chargers[idx].tagHabilitada;
+  if (!chargers[idx].tagHabilitada && chargers[idx].status === 'ocupado') {
+    removerCarro(idx);
+  }
+  renderizar();
+}
+
+function simularCarga() {
+  const limite = getLimite();
+  const ativos = [];
+  for (let i = 0; i < chargers.length; i++) {
+    const c = chargers[i];
+    if ((c.status === 'ocupado' || c.status === 'limitado') && c.tagHabilitada) {
+      ativos.push({ idx: i, c: c });
+    }
+  }
+
+  let correnteTotal = 0;
+  for (const a of ativos) {
+    correnteTotal += (a.c.potenciaAtual * 1000) / 220;
+  }
+
+  if (correnteTotal <= limite) {
+    for (const a of ativos) {
+      a.c.status = 'ocupado';
+      a.c.potenciaAtual = a.c.potenciaNominal;
+      a.c.corrente = (a.c.potenciaAtual * 1000) / 220;
+    }
+  } else {
+    if (modoBalanceamento === 0) {
+      // Equalização: todos reduzem proporcionalmente
+      const fator = limite / correnteTotal;
+      for (const a of ativos) {
+        a.c.potenciaAtual = Math.round((a.c.potenciaNominal * fator) * 10) / 10;
+        a.c.corrente = (a.c.potenciaAtual * 1000) / 220;
+        a.c.status = a.c.potenciaAtual < a.c.potenciaNominal ? 'limitado' : 'ocupado';
+      }
+    } else {
+      // Ordenar por ordem de chegada (menor ordem = chegou primeiro)
+      if (modoBalanceamento === 1) {
+        // Prioridade 1º: quem chegou primeiro recebe carga total primeiro
+        ativos.sort((a, b) => a.c.ordem - b.c.ordem);
+      } else {
+        // Prioridade Último: quem chegou por último recebe carga total primeiro
+        ativos.sort((a, b) => b.c.ordem - a.c.ordem);
+      }
+
+      let correnteDisponivel = limite;
+      for (let i = 0; i < ativos.length; i++) {
+        const a = ativos[i];
+        const correnteNecessaria = (a.c.potenciaNominal * 1000) / 220;
+        if (correnteDisponivel >= correnteNecessaria) {
+          a.c.potenciaAtual = a.c.potenciaNominal;
+          a.c.corrente = correnteNecessaria;
+          a.c.status = 'ocupado';
+          correnteDisponivel -= correnteNecessaria;
+        } else {
+          const kWDisponivel = (correnteDisponivel * 220) / 1000;
+          a.c.potenciaAtual = Math.round(kWDisponivel * 10) / 10;
+          a.c.corrente = correnteDisponivel;
+          a.c.status = 'limitado';
+          correnteDisponivel = 0;
+        }
+      }
+    }
+  }
+
+  // accumulate energy
+  for (const c of chargers) {
+    if (c.status === 'ocupado' || c.status === 'limitado') {
+      c.energiaTotal += (c.potenciaAtual / 60) * (2 / 60);
+      c.tempoCarga += 2;
+    }
+  }
+}
+
+function recalcularTudo() {
+  const limite = getLimite();
+  let correnteTotal = 0;
+  let cargaTotal = 0;
+  for (const c of chargers) {
+    if (c.status === 'ocupado' || c.status === 'limitado') {
+      correnteTotal += (c.potenciaAtual * 1000) / 220;
+      cargaTotal += c.potenciaAtual;
+    }
+  }
+
+  document.getElementById('correnteEntrada').textContent = Math.round(correnteTotal);
+  document.getElementById('cargaTotal').textContent = cargaTotal.toFixed(1);
+  const modos = ['Equalização', 'Prioridade 1º', 'Prioridade Último'];
+  document.getElementById('modoLabel').textContent = modos[modoBalanceamento];
+
+  const pct = Math.min((correnteTotal / limite) * 100, 100);
+  const fill = document.getElementById('gaugeFill');
+  fill.style.width = pct + '%';
+  fill.className = 'fill';
+  if (pct < 70) fill.classList.add('ok');
+  else if (pct < 90) fill.classList.add('warn');
+  else fill.classList.add('crit');
+
+  const badge = document.getElementById('statusBadge');
+  if (pct < 70) { badge.textContent = 'Normal'; badge.className = 'status-badge ok'; }
+  else if (pct < 90) { badge.textContent = 'Atenção'; badge.className = 'status-badge warn'; }
+  else if (pct < 100) { badge.textContent = 'Limitando'; badge.className = 'status-badge crit'; }
+  else { badge.textContent = 'Sobrecarga'; badge.className = 'status-badge crit'; }
+}
+
+function renderizar() {
+  const grid = document.getElementById('chargerGrid');
+  grid.innerHTML = '';
+
+  // Build active list sorted by arrival
+  const ativos = [];
+  for (let i = 0; i < chargers.length; i++) {
+    if (chargers[i].status !== 'livre') {
+      ativos.push({ idx: i, ordem: chargers[i].ordem });
+    }
+  }
+  ativos.sort((a, b) => a.ordem - b.ordem);
+
+  for (let i = 0; i < chargers.length; i++) {
+    const c = chargers[i];
+    const div = document.createElement('div');
+    div.className = 'charger ' + (c.status !== 'livre' ? 'ocupado' : 'livre');
+
+    let statusTag = 'Livre';
+    let statusClass = 'livre';
+    if (c.status === 'ocupado') { statusTag = 'Carregando'; statusClass = 'ocupado'; }
+    else if (c.status === 'limitado') { statusTag = 'Limitado'; statusClass = 'limitado'; }
+
+    let html = '<div class="topo"><span class="id">Carregador ' + c.id + '</span><span class="tag-status ' + statusClass + '">' + statusTag + '</span></div>';
+
+    if (c.status !== 'livre') {
+      // Find position in arrival order
+      const pos = ativos.findIndex(a => a.idx === i);
+      const rank = pos + 1;
+      const total = ativos.length;
+
+      // Determine priority ranking based on mode
+      let prioClass, prioLabel;
+      if (modoBalanceamento === 0) {
+        prioClass = 'prio-eq';
+        prioLabel = 'Chegou ' + rank + 'º';
+      } else {
+        let prio;
+        if (modoBalanceamento === 1) {
+          prio = rank; // 1st arrival = highest priority
+        } else {
+          prio = total - pos; // last arrival = highest priority
+        }
+        if (prio === total) { prioClass = 'prio-last'; prioLabel = 'Último'; }
+        else if (prio === 1) { prioClass = 'prio-1st'; prioLabel = '1º prioridade'; }
+        else { prioClass = 'prio-mid'; prioLabel = prio + 'º'; }
+      }
+
+      html += '<div class="prio-row"><span class="prio-badge ' + prioClass + '">' + rank + '</span><span class="prio-label" style="color:var(--text-dim);">' + prioLabel + '</span></div>';
+      html += '<div class="carro">' + c.carro.nome + '</div>';
+      html += '<div class="potencia-label" style="color:' + (c.status === 'limitado' ? 'var(--orange)' : 'var(--accent)') + ';">' + c.potenciaAtual.toFixed(1) + ' kW</div>';
+      html += '<div class="detalhes">';
+      html += 'Consumo: ' + c.energiaTotal.toFixed(1) + ' kWh &middot; ';
+      html += 'Tempo: ' + formatarTempo(c.tempoCarga) + '<br>';
+      html += 'Usuário: ' + c.usuario.nome + ' &middot; Tag: ' + c.usuario.tag;
+      html += '</div>';
+      html += '<div class="actions">';
+      html += '<button class="btn-remove" onclick="removerCarro(' + i + ')">&#10005; Remover</button>';
+      html += '<button class="' + (c.tagHabilitada ? 'btn-tag' : 'btn-tag-off') + '" onclick="toggleTag(' + i + ')">' + (c.tagHabilitada ? '&#10003; Tag ativa' : '&#10007; Tag desab.' ) + '</button>';
+      html += '</div>';
+    } else {
+      html += '<div style="height:80px;display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:13px;">&#9889; Disponível</div>';
+      html += '<div class="actions">';
+      html += '<button class="btn-add" onclick="adicionarCarro(' + i + ')">&#43; Adicionar Carro</button>';
+      html += '</div>';
+    }
+    div.innerHTML = html;
+    grid.appendChild(div);
+  }
+  renderizarUsuarios();
+  renderizarRelatorio();
+  renderizarCompleto();
+}
+
+function renderizarUsuarios() {
+  const tbody = document.getElementById('tabelaUsuarios');
+  tbody.innerHTML = '';
+  for (const u of usuarios) {
+    const tr = document.createElement('tr');
+    let ch = '—';
+    for (let i = 0; i < chargers.length; i++) {
+      if (chargers[i].usuario && chargers[i].usuario.tag === u.tag) {
+        ch = 'Carregador ' + chargers[i].id;
+        break;
+      }
+    }
+    tr.innerHTML = '<td>' + u.nome + '</td><td style="font-family:monospace;">' + u.tag + '</td><td>' + (u.ativa ? '<span style="color:var(--green);font-weight:600;">Ativa</span>' : '<span style="color:var(--red);font-weight:600;">Inativa</span>') + '</td><td>' + ch + '</td><td><button style="padding:4px 10px;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;background:' + (u.ativa ? 'rgba(239,68,68,0.12)' : 'rgba(34,197,94,0.12)') + ';color:' + (u.ativa ? 'var(--red)' : 'var(--green)') + ';font-family:\'Inter\',sans-serif;" onclick="toggleUsuarioAtivo(\'' + u.tag + '\')">' + (u.ativa ? 'Desativar' : 'Ativar') + '</button></td>';
+    tbody.appendChild(tr);
+  }
+}
+
+function toggleUsuarioAtivo(tag) {
+  for (const u of usuarios) {
+    if (u.tag === tag) {
+      u.ativa = !u.ativa;
+      if (!u.ativa) {
+        for (let i = 0; i < chargers.length; i++) {
+          if (chargers[i].usuario && chargers[i].usuario.tag === tag) {
+            removerCarro(i);
+          }
+        }
+      }
+      break;
+    }
+  }
+  renderizar();
+}
+
+function renderizarRelatorio() {
+  const tbody = document.getElementById('tabelaRelatorio');
+  tbody.innerHTML = '';
+  // show last 20 entries
+  const dados = historicoRecargas.slice(-20).reverse();
+  for (const r of dados) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + r.usuario + '</td><td style="font-family:monospace;">' + r.tag + '</td><td>' + r.carregador + '</td><td>' + r.carro + '</td><td>' + r.inicio + '</td><td>' + r.termino + '</td><td>' + r.consumo + '</td><td style="color:var(--accent);font-weight:600;">R$ ' + r.custo + '</td>';
+    tbody.appendChild(tr);
+  }
+  if (dados.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text-dim);padding:24px;">Nenhuma recarga finalizada ainda. Adicione carros nos carregadores e aguarde.</td></tr>';
+  }
+}
+
+function renderizarCompleto() {
+  // Tabela de carregadores ativos
+  const tbody = document.getElementById('tabelaCompleto');
+  tbody.innerHTML = '';
+  const ativos = [];
+  for (let i = 0; i < chargers.length; i++) {
+    if (chargers[i].status !== 'livre') {
+      ativos.push({ idx: i, ordem: chargers[i].ordem });
+    }
+  }
+  ativos.sort((a, b) => a.ordem - b.ordem);
+
+  for (const a of ativos) {
+    const c = chargers[a.idx];
+    const tr = document.createElement('tr');
+    const rank = ativos.indexOf(a) + 1;
+    const statusTxt = c.status === 'ocupado' ? 'Carregando' : 'Limitado';
+    tr.innerHTML = '<td>' + rank + '</td><td>Carregador ' + c.id + '</td><td>' + statusTxt + '</td><td>' + c.carro.nome + '</td><td>' + c.usuario.nome + '</td><td style="font-family:monospace;">' + c.usuario.tag + '</td><td>' + c.ordem + 'º</td><td>' + c.potenciaAtual.toFixed(1) + ' kW</td><td>' + c.energiaTotal.toFixed(1) + '</td><td>' + formatarTempo(c.tempoCarga) + '</td>';
+    tbody.appendChild(tr);
+  }
+  if (ativos.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:var(--text-dim);padding:24px;">Nenhum carregador ativo no momento.</td></tr>';
+  }
+
+  // Tabela de histórico completo
+  const thist = document.getElementById('tabelaCompletoHistorico');
+  thist.innerHTML = '';
+  const dados = historicoRecargas.slice().reverse();
+  for (const r of dados) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + r.usuario + '</td><td style="font-family:monospace;">' + r.tag + '</td><td>' + r.carregador + '</td><td>' + r.carro + '</td><td>' + r.inicio + '</td><td>' + r.termino + '</td><td>' + r.consumo + '</td><td style="color:var(--accent);font-weight:600;">R$ ' + r.custo + '</td>';
+    thist.appendChild(tr);
+  }
+  if (dados.length === 0) {
+    thist.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text-dim);padding:24px;">Nenhuma recarga finalizada.</td></tr>';
+  }
+}
+
+function exportarPDF() {
+  const w = window.open('', '_blank');
+  let html = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>StationLodgeMobi — Relatório Completo</title>';
+  html += '<style>';
+  html += '* { margin: 0; padding: 0; box-sizing: border-box; }';
+  html += 'body { font-family: Arial, sans-serif; padding: 24px; color: #222; background: #fff; }';
+  html += 'h1 { font-size: 20px; margin-bottom: 4px; }';
+  html += '.sub { font-size: 13px; color: #666; margin-bottom: 20px; }';
+  html += 'h2 { font-size: 15px; margin: 20px 0 8px; border-bottom: 2px solid #0affb7; padding-bottom: 4px; }';
+  html += 'table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 16px; }';
+  html += 'th { background: #f5f5f5; text-align: left; padding: 6px 8px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #ddd; }';
+  html += 'td { padding: 5px 8px; border-bottom: 1px solid #eee; }';
+  html += '.tag { font-family: monospace; font-size: 11px; }';
+  html += '.green { color: #0affb7; font-weight: 700; }';
+  html += '.footer { margin-top: 24px; padding-top: 12px; border-top: 1px solid #ddd; font-size: 11px; color: #999; text-align: center; }';
+  html += '.section-title { font-size: 14px; font-weight: 700; margin: 16px 0 8px; }';
+  html += '@media print { body { padding: 12px; } }';
+  html += '</style></head><body>';
+
+  html += '<h1>&#9889; StationLodgeMobi — Relatório Completo</h1>';
+  html += '<div class="sub">Station Lodge &middot; Passo Fundo/RS &middot; Gerado em ' + new Date().toLocaleString('pt-BR') + '</div>';
+
+  // Status atual
+  html += '<h2>&#9889; Status Atual dos Carregadores</h2>';
+  html += '<table><thead><tr><th>#</th><th>Carregador</th><th>Status</th><th>Carro</th><th>Usuário</th><th>Tag</th><th>Potência</th><th>Consumo</th><th>Tempo</th></tr></thead><tbody>';
+
+  const ativos = [];
+  for (let i = 0; i < chargers.length; i++) {
+    if (chargers[i].status !== 'livre') {
+      ativos.push({ idx: i, ordem: chargers[i].ordem });
+    }
+  }
+  ativos.sort((a, b) => a.ordem - b.ordem);
+
+  for (const a of ativos) {
+    const c = chargers[a.idx];
+    const rank = ativos.indexOf(a) + 1;
+    const statusTxt = c.status === 'ocupado' ? 'Carregando' : 'Limitado';
+    html += '<tr><td>' + rank + '</td><td>Carregador ' + c.id + '</td><td>' + statusTxt + '</td><td>' + c.carro.nome + '</td><td>' + c.usuario.nome + '</td><td class="tag">' + c.usuario.tag + '</td><td>' + c.potenciaAtual.toFixed(1) + ' kW</td><td>' + c.energiaTotal.toFixed(1) + ' kWh</td><td>' + formatarTempo(c.tempoCarga) + '</td></tr>';
+  }
+  if (ativos.length === 0) {
+    html += '<tr><td colspan="9" style="text-align:center;padding:16px;color:#999;">Nenhum carregador ativo.</td></tr>';
+  }
+  html += '</tbody></table>';
+
+  // Resumo do sistema
+  let correnteTotal = 0, cargaTotal = 0;
+  for (const c of chargers) {
+    if (c.status !== 'livre') {
+      correnteTotal += (c.potenciaAtual * 1000) / 220;
+      cargaTotal += c.potenciaAtual;
+    }
+  }
+  html += '<div style="display:flex;gap:24px;font-size:13px;margin-bottom:16px;padding:10px;background:#f9f9f9;border-radius:6px;">';
+  html += '<span><strong>Corrente total:</strong> ' + Math.round(correnteTotal) + ' A</span>';
+  html += '<span><strong>Carga total:</strong> ' + cargaTotal.toFixed(1) + ' kW</span>';
+  html += '<span><strong>Limite disjuntor:</strong> ' + getLimite() + ' A</span>';
+  html += '<span><strong>Preço kWh:</strong> R$ ' + getPreco().toFixed(2) + '</span>';
+  html += '</div>';
+
+  // Histórico
+  html += '<h2>&#128196; Histórico de Recargas</h2>';
+  html += '<table><thead><tr><th>Usuário</th><th>Tag</th><th>Carregador</th><th>Carro</th><th>Início</th><th>Término</th><th>Consumo (kWh)</th><th>Custo (R$)</th></tr></thead><tbody>';
+
+  let totalKwh = 0, totalCusto = 0;
+  for (const r of historicoRecargas) {
+    html += '<tr><td>' + r.usuario + '</td><td class="tag">' + r.tag + '</td><td>' + r.carregador + '</td><td>' + r.carro + '</td><td>' + r.inicio + '</td><td>' + r.termino + '</td><td>' + r.consumo + '</td><td>R$ ' + r.custo + '</td></tr>';
+    totalKwh += parseFloat(r.consumo) || 0;
+    totalCusto += parseFloat(r.custo) || 0;
+  }
+  if (historicoRecargas.length === 0) {
+    html += '<tr><td colspan="8" style="text-align:center;padding:16px;color:#999;">Nenhuma recarga registrada.</td></tr>';
+  } else {
+    html += '<tr style="font-weight:700;border-top:2px solid #333;"><td colspan="6">Total</td><td>' + totalKwh.toFixed(1) + ' kWh</td><td>R$ ' + totalCusto.toFixed(2) + '</td></tr>';
+  }
+  html += '</tbody></table>';
+
+  html += '<div class="footer">StationLodgeMobi &mdash; Plataforma de gestão do Station Lodge &middot; Passo Fundo/RS &middot; 180 apartamentos</div>';
+  html += '<script>window.onload=function(){window.print()};<' + '/script>';
+  html += '</body></html>';
+
+  w.document.write(html);
+  w.document.close();
+}
+
+function mudarAba(nome, btn) {
+  document.querySelectorAll('.tabs-sec button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel' + nome.charAt(0).toUpperCase() + nome.slice(1)).classList.add('active');
+}
+
+function formatarTempo(segundos) {
+  const h = Math.floor(segundos / 3600);
+  const m = Math.floor((segundos % 3600) / 60);
+  if (h > 0) return h + 'h ' + m + 'min';
+  return m + 'min';
+}
+
+function formatarData(d) {
+  return d.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
+}
+
+function gerarRelatorio() {
+  if (historicoRecargas.length === 0) {
+    alert('Nenhuma recarga registrada para exportar.');
+    return;
+  }
+  let csv = 'Usuário,Tag,Carregador,Carro,Início,Término,Consumo (kWh),Custo (R$)\n';
+  for (const r of historicoRecargas) {
+    csv += r.usuario + ',' + r.tag + ',' + r.carregador + ',' + r.carro + ',' + r.inicio + ',' + r.termino + ',' + r.consumo + ',' + r.custo + '\n';
+  }
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'relatorio-recargas-' + new Date().toISOString().slice(0,10) + '.csv';
+  link.click();
+  alert('Relatório exportado com ' + historicoRecargas.length + ' registros.');
+}
+
+init();
+</script>
+</body>
+</html>
