@@ -23,8 +23,5 @@ services:
         source: /gestao-carregadores
         destination: /gestao-carregadores.html
       - type: rewrite
-        source: /gestao-carregadores.html
-        destination: /gestao-carregadores.html
-      - type: rewrite
         source: /*
         destination: /passo-fundo-ev.html
