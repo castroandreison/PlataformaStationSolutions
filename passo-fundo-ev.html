@@ -502,6 +502,7 @@ footer {
     <div class="badge"><span></span> Análise Técnica &middot; ADM1 &middot; ADM2</div>
     <h1>Energia Solar + Mobilidade<br><span class="highlight">Condomínio StationLodge</span></h1>
     <p>Dimensionamento fotovoltaico &middot; Projeção de frota &middot; Viabilidade</p>
+    <button onclick="exportarRelatorioPDF()" style="margin-top:16px;padding:10px 24px;border:none;border-radius:8px;background:var(--accent-dim);color:var(--accent);font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:0.2s;" onmouseover="this.style.background='rgba(10,255,183,0.25)'" onmouseout="this.style.background='var(--accent-dim)'">&#128203; Imprimir Relatório PDF</button>
   </header>
 
   <!-- TABS -->
@@ -1482,6 +1483,226 @@ footer {
   </footer>
 
 </div>
+
+<style>
+@media print {
+  body * { visibility: visible; }
+  .wrapper { max-width: none; padding: 0; }
+  .tabs, .tab-btn, header button, footer, body::before { display: none !important; }
+  .tab-content { display: block !important; opacity: 1 !important; animation: none !important; page-break-inside: avoid; }
+  .tab-content { break-inside: avoid; }
+  section { break-inside: avoid; page-break-inside: avoid; }
+  .table-wrap { overflow: visible !important; }
+  table { font-size: 11px; }
+  .compare { break-inside: avoid; }
+  .rec-box { break-inside: avoid; }
+  .card { break-inside: avoid; }
+  .metrics { break-inside: avoid; }
+}
+</style>
+
+<script>
+function exportarRelatorioPDF() {
+  const w = window.open('', '_blank');
+  let html = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>StationLodge — Relatório Completo</title>';
+  html += '<style>';
+  html += '* { margin: 0; padding: 0; box-sizing: border-box; }';
+  html += 'body { font-family: Arial, sans-serif; padding: 20px; color: #222; background: #fff; font-size: 12px; }';
+  html += 'h1 { font-size: 22px; margin-bottom: 2px; }';
+  html += 'h2 { font-size: 16px; margin: 18px 0 6px; border-bottom: 2px solid #0affb7; padding-bottom: 3px; }';
+  html += 'h3 { font-size: 13px; margin: 12px 0 4px; color: #444; }';
+  html += '.sub { font-size: 12px; color: #666; margin-bottom: 16px; }';
+  html += 'table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 14px; }';
+  html += 'th { background: #f0f0f0; text-align: left; padding: 5px 7px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.3px; border-bottom: 1px solid #ccc; }';
+  html += 'td { padding: 4px 7px; border-bottom: 1px solid #eee; }';
+  html += 'tr:nth-child(even) td { background: #fafafa; }';
+  html += '.num { text-align: right; font-weight: 600; }';
+  html += '.ok { color: #0affb7; font-weight: 700; }';
+  html += '.warn { color: #f97316; font-weight: 700; }';
+  html += '.badge-print { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 10px; font-weight: 700; }';
+  html += '.badge-print.green { background: #d4f5e8; color: #059669; }';
+  html += '.badge-print.blue { background: #dbeafe; color: #2563eb; }';
+  html += '.badge-print.orange { background: #ffedd5; color: #ea580c; }';
+  html += '.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }';
+  html += '.grid-2 > div { padding: 10px; border: 1px solid #eee; border-radius: 6px; }';
+  html += '.grid-2 .label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.3px; color: #888; }';
+  html += '.grid-2 .value { font-size: 18px; font-weight: 800; }';
+  html += '.footer { margin-top: 20px; padding-top: 10px; border-top: 1px solid #ddd; font-size: 10px; color: #999; text-align: center; }';
+  html += '.col-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }';
+  html += '.col-2 > div { padding: 8px; border: 1px solid #eee; border-radius: 5px; }';
+  html += '.tag-rec { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; background: #d4f5e8; color: #059669; }';
+  html += '@media print { body { padding: 10px; } @page { margin: 15mm; } }';
+  html += '</style></head><body>';
+
+  html += '<h1>StationLodge — Energia Solar + Mobilidade</h1>';
+  html += '<div class="sub">Condomínio StationLodge &middot; Passo Fundo/RS &middot; 180 aptos &middot; Gerado em ' + new Date().toLocaleString('pt-BR') + '</div>';
+
+  // ====== TAB 1: Mobilidade Elétrica ======
+  html += '<h2>Mobilidade Elétrica — Passo Fundo</h2>';
+  html += '<div class="grid-2">';
+  html += '<div><div class="label">Eletrificados acumulados</div><div class="value" style="color:#059669;">1.146</div><div style="font-size:11px;color:#888;">desde início ABVE</div></div>';
+  html += '<div><div class="label">Vendas 2025</div><div class="value" style="color:#2563eb;">552</div><div style="font-size:11px;color:#888;">salto de 38% vs 2024</div></div>';
+  html += '<div><div class="label">Jan–Abr 2026</div><div class="value" style="color:#7c3aed;">270</div><div style="font-size:11px;color:#888;">de 1.889 carros 0km</div></div>';
+  html += '<div><div class="label">Frota total circulante</div><div class="value" style="color:#ea580c;">154,8k</div><div style="font-size:11px;color:#888;">todos combustíveis, 1º sem 2026</div></div>';
+  html += '</div>';
+
+  // Frota projection table
+  html += '<h3>Projeção de Frota Elétrica — Passo Fundo</h3>';
+  html += '<table><thead><tr><th>Ano</th><th class="num">Projeção</th><th class="num">Crescimento</th></tr></thead><tbody>';
+  const frota = [
+    { ano: '2026 (1º sem)', val: '270' },
+    { ano: '2027', val: '~950' },
+    { ano: '2028', val: '~1.500' },
+    { ano: '2029', val: '~2.400' },
+    { ano: '2030', val: '~3.800' },
+    { ano: '2031', val: '~6.100' },
+    { ano: '2032', val: '~9.700' },
+    { ano: '2033', val: '~15.500' },
+    { ano: '2034', val: '~24.800' },
+    { ano: '2035', val: '~39.700' },
+  ];
+  for (const f of frota) {
+    html += '<tr><td>' + f.ano + '</td><td class="num" style="font-weight:700;">' + f.val + '</td><td class="num">—</td></tr>';
+  }
+  html += '</tbody></table>';
+
+  // Comparison bar chart data
+  html += '<h3>Comparativo — Passo Fundo vs Brasil</h3>';
+  html += '<table><thead><tr><th>Indicador</th><th class="num">Passo Fundo</th><th class="num">Brasil</th></tr></thead><tbody>';
+  html += '<tr><td>Participação eletrificados 2025</td><td class="num" style="font-weight:700;color:#059669;">6,3%</td><td class="num">4,8%</td></tr>';
+  html += '<tr><td>Crescimento 2025 vs 2024</td><td class="num" style="font-weight:700;color:#059669;">+38%</td><td class="num">+61%</td></tr>';
+  html += '<tr><td>Participação jan–abr 2026</td><td class="num" style="font-weight:700;color:#059669;">14,3%</td><td class="num">~7%</td></tr>';
+  html += '<tr><td>Frota eletrificada acumulada</td><td class="num" style="font-weight:700;color:#2563eb;">1.146</td><td class="num">~540k</td></tr>';
+  html += '</tbody></table>';
+
+  // ====== TAB 2: Análise Carregadores ======
+  html += '<h2>Análise de Carregadores — StationLodge</h2>';
+
+  html += '<div class="grid-2">';
+  html += '<div><div class="label">Carregadores AC</div><div class="value" style="color:#2563eb;">8 &times; 7,4 kW</div><div style="font-size:11px;color:#888;">total 59,2 kW</div></div>';
+  html += '<div><div class="label">Carregadores CC</div><div class="value" style="color:#ea580c;">2 &times; 30 kW</div><div style="font-size:11px;color:#888;">total 60 kW · folga 15 kW</div></div>';
+  html += '<div><div class="label">Investimento CC</div><div class="value" style="color:#ea580c;">R$ 95.000</div><div style="font-size:11px;color:#888;">2×R$ 40k + R$ 15k instalação</div></div>';
+  html += '<div><div class="label">Payback CC</div><div class="value" style="color:#059669;">~20 meses</div><div style="font-size:11px;color:#888;">R$ 316,8k margem em 5 anos</div></div>';
+  html += '</div>';
+
+  // OCPP Management comparison table 
+  html += '<h3>Gestão OCPP — Custo 5 Anos</h3>';
+  html += '<table><thead><tr><th>Ano</th><th class="num">Estações</th><th class="num">Manual</th><th class="num">StationLodgeMobi</th><th class="num">CVE Pro</th></tr></thead><tbody>';
+  const gestao = [
+    ['2026', '8', 'R$ 0', 'R$ 1.640', 'R$ 2.880'],
+    ['2027', '12', 'R$ 0', 'R$ 1.968', 'R$ 5.184'],
+    ['2028', '16', 'R$ 0', 'R$ 2.362', 'R$ 8.294'],
+    ['2029', '22', 'R$ 0', 'R$ 2.834', 'R$ 13.686'],
+    ['2030', '28', 'R$ 0', 'R$ 3.401', 'R$ 20.902'],
+  ];
+  for (const g of gestao) {
+    html += '<tr><td>' + g[0] + '</td><td class="num">' + g[1] + '</td><td class="num">' + g[2] + '</td><td class="num" style="font-weight:600;">' + g[3] + '</td><td class="num">' + g[4] + '</td></tr>';
+  }
+  html += '<tr style="border-top:2px solid #333;font-weight:700;"><td>Total</td><td class="num">—</td><td class="num">R$ 0</td><td class="num" style="color:#059669;">R$ 12.205</td><td class="num" style="color:#ea580c;">R$ 50.946</td></tr>';
+  html += '</tbody></table>';
+
+  // DC Charger Projection
+  html += '<h3>Projeção Financeira — Carregadores CC (5% a.a. recargas)</h3>';
+  html += '<table><thead><tr><th>Indicador</th><th class="num">Ano 1</th><th class="num">Ano 2</th><th class="num">Ano 3</th><th class="num">Ano 4</th><th class="num">Ano 5</th></tr></thead><tbody>';
+  html += '<tr><td>Sessões/mês</td><td class="num">210</td><td class="num">221</td><td class="num">232</td><td class="num">243</td><td class="num">255</td></tr>';
+  html += '<tr><td>Energia mensal (kWh)</td><td class="num">5.250</td><td class="num">5.513</td><td class="num">5.788</td><td class="num">6.078</td><td class="num">6.381</td></tr>';
+  html += '<tr><td>Receita mensal</td><td class="num" style="font-weight:700;">R$ 10.500</td><td class="num" style="font-weight:700;">R$ 11.025</td><td class="num" style="font-weight:700;">R$ 11.576</td><td class="num" style="font-weight:700;">R$ 12.155</td><td class="num" style="font-weight:700;">R$ 12.763</td></tr>';
+  html += '<tr><td>Custo energia</td><td class="num" style="color:#ea580c;">-R$ 5.723</td><td class="num" style="color:#ea580c;">-R$ 6.009</td><td class="num" style="color:#ea580c;">-R$ 6.309</td><td class="num" style="color:#ea580c;">-R$ 6.625</td><td class="num" style="color:#ea580c;">-R$ 6.956</td></tr>';
+  html += '<tr style="font-weight:700;border-top:2px solid #333;"><td>Margem mensal</td><td class="num" style="color:#059669;">R$ 4.778</td><td class="num" style="color:#059669;">R$ 5.016</td><td class="num" style="color:#059669;">R$ 5.267</td><td class="num" style="color:#059669;">R$ 5.531</td><td class="num" style="color:#059669;">R$ 5.807</td></tr>';
+  html += '<tr style="background:#f5f5f5;font-weight:700;"><td>Margem anual</td><td class="num" style="color:#059669;">R$ 57,3k</td><td class="num" style="color:#059669;">R$ 60,2k</td><td class="num" style="color:#059669;">R$ 63,2k</td><td class="num" style="color:#059669;">R$ 66,4k</td><td class="num" style="color:#059669;">R$ 69,7k</td></tr>';
+  html += '</tbody></table>';
+  html += '<div style="display:flex;gap:16px;font-size:12px;padding:8px 0;border-top:2px solid #333;margin-bottom:14px;">';
+  html += '<span><strong>Investimento:</strong> R$ 95.000</span>';
+  html += '<span><strong>Payback:</strong> ~20 meses</span>';
+  html += '<span><strong>Margem 5 anos:</strong> R$ 316,8k</span>';
+  html += '<span><strong>Lucro líquido 5 anos:</strong> R$ 221,8k</span>';
+  html += '</div>';
+
+  // ====== TAB 3: Solar ======
+  html += '<h2>Análise Solar — Sistema Fotovoltaico</h2>';
+
+  html += '<div class="grid-2">';
+  html += '<div><div class="label">Carga instalada total</div><div class="value" style="color:#2563eb;">130 kW</div><div style="font-size:11px;color:#888;">ADM1 (65,2 kW) + ADM2 (64,8 kW)</div></div>';
+  html += '<div><div class="label">Demanda calculada total</div><div class="value" style="color:#059669;">98 kW</div><div style="font-size:11px;color:#888;">ADM1 (41,4 kW) + ADM2 (56,5 kW)</div></div>';
+  html += '<div><div class="label">Sistema recomendado</div><div class="value" style="color:#059669;">50 kWp</div><div style="font-size:11px;color:#888;">80 painéis EMSC-625B</div></div>';
+  html += '<div><div class="label">Geração anual</div><div class="value" style="color:#059669;">64.800 kWh</div><div style="font-size:11px;color:#888;">economia de ~R$ 70,6k/ano</div></div>';
+  html += '</div>';
+
+  // Solar comparison
+  html += '<h3>Comparativo de Opções</h3>';
+  html += '<div class="col-2">';
+
+  html += '<div>';
+  html += '<div style="font-weight:700;margin-bottom:6px;">&#9312; Um inversor (IONS-75K)</div>';
+  html += '<table><tbody>';
+  html += '<tr><td style="color:#888;">Potência</td><td class="num">47 kWp</td></tr>';
+  html += '<tr><td style="color:#888;">Painéis</td><td class="num">75 × EMSC-625B</td></tr>';
+  html += '<tr><td style="color:#888;">Área</td><td class="num">~210 m²</td></tr>';
+  html += '<tr><td style="color:#888;">Geração</td><td class="num">~5.400 kWh/mês</td></tr>';
+  html += '<tr><td style="color:#888;">Cobertura</td><td class="num">~23%</td></tr>';
+  html += '<tr><td style="color:#888;">Investimento</td><td class="num" style="color:#ea580c;font-weight:700;">~R$ 180.000</td></tr>';
+  html += '<tr><td style="color:#888;">Payback</td><td class="num" style="color:#059669;font-weight:700;">~2,5-3 anos</td></tr>';
+  html += '</tbody></table>';
+  html += '</div>';
+
+  html += '<div>';
+  html += '<div style="font-weight:700;margin-bottom:6px;">&#9313; Dois inversores <span class="tag-rec">Recomendado</span></div>';
+  html += '<table><tbody>';
+  html += '<tr><td style="color:#888;">Potência</td><td class="num">50 kWp</td></tr>';
+  html += '<tr><td style="color:#888;">Painéis</td><td class="num">80 × EMSC-625B</td></tr>';
+  html += '<tr><td style="color:#888;">Área</td><td class="num">~224 m²</td></tr>';
+  html += '<tr><td style="color:#888;">Geração</td><td class="num">~5.760 kWh/mês</td></tr>';
+  html += '<tr><td style="color:#888;">Cobertura</td><td class="num">ADM1 ~27% · ADM2 ~22%</td></tr>';
+  html += '<tr><td style="color:#888;">Investimento</td><td class="num" style="color:#ea580c;font-weight:700;">~R$ 199.000</td></tr>';
+  html += '<tr><td style="color:#888;">Payback</td><td class="num" style="color:#059669;font-weight:700;">~2,5-3 anos</td></tr>';
+  html += '</tbody></table>';
+  html += '</div>';
+
+  html += '</div>';
+
+  // Payback
+  html += '<h3>Payback — Sistema Selecionado (50 kWp)</h3>';
+  html += '<table><thead><tr><th>Indicador</th><th class="num">Valor</th></tr></thead><tbody>';
+  html += '<tr><td>Investimento total</td><td class="num" style="font-weight:700;">R$ 199.000</td></tr>';
+  html += '<tr><td>Geração anual</td><td class="num">64.800 kWh</td></tr>';
+  html += '<tr><td>Economia anual (R$ 1,09/kWh)</td><td class="num" style="font-weight:700;color:#059669;">R$ 70.632</td></tr>';
+  html += '<tr><td>Payback simples</td><td class="num" style="font-weight:700;color:#059669;">~2,8 anos</td></tr>';
+  html += '<tr><td>Payback c/ reajuste + degradação</td><td class="num" style="font-weight:700;color:#059669;">~2,9 anos</td></tr>';
+  html += '<tr><td>Economia em 25 anos</td><td class="num" style="font-weight:700;color:#2563eb;">R$ 3.200.000</td></tr>';
+  html += '</tbody></table>';
+
+  // Recommendation
+  html += '<h3>Recomendação Final</h3>';
+  html += '<div style="padding:10px;border:1px solid #d4f5e8;border-radius:6px;background:#f0fdfa;margin-bottom:14px;">';
+  html += '<div style="font-weight:700;color:#059669;margin-bottom:4px;">&#9313; Dois inversores (IONS-33K T4 + IONS-40K T4) — Recomendado</div>';
+  html += '<div style="font-size:11px;color:#555;line-height:1.6;">';
+  html += 'ADM1: 32 módulos EMSC-625B (~20 kWp) · IONS-33K T4 AFCI — atende ~27% da demanda de 41,4 kW<br>';
+  html += 'ADM2: 48 módulos EMSC-625B (~30 kWp) · IONS-40K T4 AFCI — atende ~22% da demanda de 56,5 kW<br>';
+  html += '<strong>Vantagens:</strong> operação independente por ADM, expansão futura até 109,5 kWp, baixo risco de falha.';
+  html += '</div></div>';
+
+  html += '<div class="footer">StationLodge — Passo Fundo/RS · 180 aptos · Análise gerada em ' + new Date().toLocaleString('pt-BR') + ' · Projeções sujeitas a variações de mercado</div>';
+
+  html += '<script>window.onload=function(){setTimeout(function(){window.print()},500)};<\/script>';
+  html += '</body></html>';
+
+  w.document.write(html);
+  w.document.close();
+}
+</script>
+
+<style>
+@media print {
+  body * { visibility: visible; }
+  .wrapper { max-width: none; padding: 0; }
+  .tabs, .tab-btn, header button, footer, body::before { display: none !important; }
+  .tab-content { display: block !important; opacity: 1 !important; animation: none !important; }
+  section { break-inside: avoid; page-break-inside: avoid; }
+  .table-wrap { overflow: visible !important; }
+  table { font-size: 11px; }
+  .compare, .rec-box, .card, .metrics { break-inside: avoid; }
+}
+</style>
 
 <script>
 (function() {
